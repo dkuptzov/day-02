@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
-GREP = main.c sprintf.c
+GREP = main.c s21_atoi.c s21_binary.c s21_case.c s21_sprintf.c
 QUEST1 = s21_grep
 
 %.o: %.c
