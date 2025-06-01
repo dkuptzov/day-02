@@ -35,15 +35,17 @@ char *s21_atoi(param *param) {
 char *s21_atof(param *param) {
     char *str;
     str = calloc(1024 + 1, sizeof(char));
-    int count = 0, max = 7;
+    int count = 0, max = 6;
     long double x = param->va_f;
+    if (x < 0) x *= -1;
     x -= (long long int)x;
     str[count++] = '.';
-    if (param->flag == '.') {
-        max = param->width + 1;
-        x = round(x * pow(10, param->width)) / pow(10, param->width);
+    if (param->flag == '.' || param->acc == '.') {
+        if (param->accuracy > 0) max = param->accuracy;
+        else max = param->width;
+        x = round(x * pow(10, max)) / pow(10, max);
     }
-    while (count < max) {
+    while (count < max + 1) {
         x *= 10.0;
         str[count++] = '0' + ((int)x % 10);
         x -= (int)x;

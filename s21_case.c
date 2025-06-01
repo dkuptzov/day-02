@@ -21,7 +21,7 @@ void case_u(char **str, param *param) {
     char *str_du = NULL;
     str_du = s21_atoi(param);
     param->width = (param->width > s21_strlen(str_du)) ? param->width - s21_strlen(str_du) : 0;
-    if (param->flag == ' ') (*str)[param->count++] = ' ';
+    if (param->flag == ' ' && str_du[0] != '-') (*str)[param->count++] = ' ';
     if (param->flag == '-') {
         for (int j = 0 ; str_du[j] != '\0'; j++)
             (*str)[param->count++] = str_du[j];
@@ -57,17 +57,17 @@ void case_u(char **str, param *param) {
 }
 
 void case_f(char **str, param *param) {
-    char *str_f = NULL;
-    str_f = s21_atoi(param);
-    for (int j = 0 ; str_f[j] != '\0'; j++ ) {
-        (*str)[param->count++] = str_f[j];
+    char *str_int, *str_float = NULL;
+    str_int = s21_atoi(param);
+    for (int j = 0 ; str_int[j] != '\0'; j++ ) {
+        (*str)[param->count++] = str_int[j];
     }
-    str_f = NULL;
-    str_f = s21_atof(param);
-    for (int j = 0 ; str_f[j] != '\0'; j++ ) {
-        (*str)[param->count++] = str_f[j];
+    free(str_int);
+    str_float = s21_atof(param);
+    for (int j = 0 ; str_float[j] != '\0'; j++ ) {
+        (*str)[param->count++] = str_float[j];
     }
-    free(str_f);
+    free(str_float);
 }
 
 void case_s(char **str, char *str_d, param *param) {

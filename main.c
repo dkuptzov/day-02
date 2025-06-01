@@ -127,21 +127,26 @@ int main() {
     printf("ORG_1HD: %s\n\n", str2);
     clear(&str, &str2);
 
-    a = s21_sprintf(str, "% d % d % d", -123, 456, -789);
-    a = sprintf(str2, "% d % d % d", -123, 456, -789);
-    printf("ORG_ D : %s\n\n", str2);
-    clear(&str, &str2);
-
     a = s21_sprintf(str, "Text:\n%d", 12345);
     a = sprintf(str2, "Text:\n%d", 12345);
     printf("ORG_DDD: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "% d % d % d", -123, 456, -789);
+    a = sprintf(str2, "% d % d % d", -123, 456, -789);
+    printf("ORG_ D : %s\n\n", str2);
     clear(&str, &str2);
 
     a = s21_sprintf(str, "%-+10.2f", -123.456789);
     a = sprintf(str2, "%-+10.2f", -123.456789);
     printf("ORG_DDD: %s\n\n", str2);
     clear(&str, &str2);
-//
+
+    a = s21_sprintf(str, "%+-10.2f", -123.456789);
+    a = sprintf(str2, "%+-10.2f", -123.456789);
+    printf("ORG_DDD: %s\n\n", str2);
+    clear(&str, &str2);
+
     //a = sprintf(str3, "ERROR %f TEST", y);
     //printf("ERROR_1: %s\n", str3);
 

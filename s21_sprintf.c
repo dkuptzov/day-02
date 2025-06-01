@@ -7,7 +7,7 @@
 // %[флаги][ширина][.точность][длина]спецификатор
 
 int s21_sprintf(char *str, const char *str_format, ...) {
-    param param = {0, 0, 0, 0, 'x', 'x', 'x', '\0', 0, 0.0};
+    param param = {0, 0, 0, 0, 'x', 'x', 'x', 'x','\0', 0, 0.0};
     va_list args;
     va_start(args, str_format);
     char *str_d, *str_sing;
@@ -16,6 +16,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
         param.count_sign = 0;
         if (str_format[i] == '%') {
             param.flag = 'x';
+            param.acc = 'x';
             param.width = 0;
             param.accuracy = 0;
             param.length = 'x';
@@ -23,6 +24,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
             //flag
             if (str_format[i] == '-' || str_format[i] == '+' || str_format[i] == '0' || str_format[i] == ' ' || str_format[i] == '.')
                 param.flag = str_format[i++];
+            if (str_format[i] == '+' || str_format[i] == '-') i++;
             //flag
             //wigth
             while (str_format[i] >= '0' && str_format[i] <= '9') {
@@ -35,6 +37,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
             //wigth
             //accuracy
             if (str_format[i] == '.') {
+                param.acc = '.';
                 i++;
                 while (str_format[i] >= '0' && str_format[i] <= '9')
                     str_sing[param.count_sign++] = str_format[i++];
@@ -47,6 +50,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                 param.length = str_format[i++];
             //length
             param.type = str_format[i];
+            //printf("CASE: %c\n", str_format[i]);
             switch (str_format[i]) {
                 case 'c':
                     param.c = va_arg(args, int);
@@ -58,8 +62,6 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         long int temp = va_arg(args, long int);
                         param.va_int = (long long int)temp;
                     }
-                    else if (param.length == 'L')
-                        param.va_int = va_arg(args, long long int);
                     else {
                         int temp = va_arg(args, int);
                         param.va_int = (long long int)temp;
@@ -71,7 +73,12 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     case_u(&str, &param);
                     break;
                 case 'f':
-                    param.va_f = va_arg(args, double);
+                    if (param.length == 'L')
+                        param.va_f = va_arg(args, long double);
+                    else {
+                        double temp = va_arg(args, double);
+                        param.va_f = (long double)temp;
+                    }
                     case_f(&str, &param);
                     break;
                 case 's':
@@ -90,7 +97,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
     }
     str[param.count] = '\0';
     printf("STR_END: %s\n", str);
-    return 0;
+    return param.count;
 }
 
 int s21_strlen(char *str_du) {

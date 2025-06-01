@@ -10,12 +10,13 @@ typedef struct param {
   char flag;
   char type;
   char c;
+  char acc;
   //short int h;
   //long int l;
   //int va_int;
   //long long int va_ll;
   long long int va_int;
-  double va_f;
+  long double va_f;
 } param;
 
 //char *s21_atoi(param *param);
