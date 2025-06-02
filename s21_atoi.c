@@ -14,6 +14,7 @@ char *s21_atoi(param *param) {
     else if (param->type == 'd') x = param->va_int;
     else if (param->type == 'u') x = param->va_int;
     else if (param->type == 'f') x = param->va_f;
+    else if (param->type == 'g') x = param->va_f;
     if (x < 0) {
         x *= -1;
         sign = 1;
@@ -45,11 +46,14 @@ char *s21_atof(param *param) {
         else max = param->width;
         x = round(x * pow(10, max)) / pow(10, max);
     }
+    else if (param->g != 0) max -= param->g;
     while (count < max + 1) {
         x *= 10.0;
         str[count++] = '0' + ((int)x % 10);
         x -= (int)x;
     }
-    str[count] = '\0';
+    //while(str[--count] == '0') str[count] = '\0';
+    if (str[--count] == '.') str[count] = '\0';
+    else str[++count] = '\0';
     return str;
 }

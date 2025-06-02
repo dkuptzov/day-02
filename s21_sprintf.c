@@ -7,12 +7,13 @@
 // %[флаги][ширина][.точность][длина]спецификатор
 
 int s21_sprintf(char *str, const char *str_format, ...) {
-    param param = {0, 0, 0, 0, 'x', 'x', 'x', 'x','\0', 0, 0.0};
+    param param = {0, 0, 0, 0, 0, 0, 'x', 'x', 'x', 'x','\0', 0, 0.0};
     va_list args;
     va_start(args, str_format);
-    char *str_d, *str_sing;
+    char *str_d, *str_sing, *str_ready;
     str_sing = calloc(1024 + 1, sizeof(char));
-    for (int i = 0; str_format[i] != '\0'; i++) {
+    str_ready = calloc(1024 + 1, sizeof(char));
+    for (int i = 0; str_format[i] != '\0' && param.error == 0; i++) {
         param.count_sign = 0;
         if (str_format[i] == '%') {
             param.flag = 'x';
@@ -54,7 +55,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
             switch (str_format[i]) {
                 case 'c':
                     param.c = va_arg(args, int);
-                    case_c(&str, &param);
+                    case_c(&str_ready, &param);
                     //str[param.count++] = va_arg(args, int);
                     break;
                 case 'd':
@@ -66,11 +67,16 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         int temp = va_arg(args, int);
                         param.va_int = (long long int)temp;
                     }
-                    case_u(&str, &param);
+                    case_u(&str_ready, &param);
+                    break;
+                case 'g':
+                    double temp = va_arg(args, double);
+                    param.va_f = (long double)temp;
+                    case_g(&str_ready, &param);
                     break;
                 case 'u':
                     param.va_int = va_arg(args, long long int);
-                    case_u(&str, &param);
+                    case_u(&str_ready, &param);
                     break;
                 case 'f':
                     if (param.length == 'L')
@@ -79,24 +85,28 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         double temp = va_arg(args, double);
                         param.va_f = (long double)temp;
                     }
-                    case_f(&str, &param);
+                    case_f(&str_ready, &param);
                     break;
                 case 's':
                     str_d = va_arg(args, char*);
-                    case_s(&str, str_d, &param);
+                    case_s(&str_ready, str_d, &param);
                     //for (int j = 0 ; str_d[j] != '\0'; j++ )
                     //    str[param.count++] = str_d[j];
                     break;
                 default:
+                    param.error = 1;
                     break;
             }
         }
         else {
-            str[param.count++] = str_format[i];
+            str_ready[param.count++] = str_format[i];
         }
     }
-    str[param.count] = '\0';
-    printf("STR_END: %s\n", str);
+    str_ready[param.count] = '\0';
+    printf("STR_END: %s\n", str_ready);
+    if (param.error == 0)
+    for (int i = 0; str_format[i] != '\0'; i++)
+        str[i] = str_ready[i];
     return param.count;
 }
 

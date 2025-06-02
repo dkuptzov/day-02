@@ -2,6 +2,8 @@
 #define SPRINTF21_H
 
 typedef struct param {
+  int error;
+  int g;
   int count;
   int count_sign;
   int width;
@@ -11,10 +13,6 @@ typedef struct param {
   char type;
   char c;
   char acc;
-  //short int h;
-  //long int l;
-  //int va_int;
-  //long long int va_ll;
   long long int va_int;
   long double va_f;
 } param;

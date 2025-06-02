@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -121,7 +122,7 @@ int main() {
     a = sprintf(str2, "Test: %-10s|%5d|%c|%.2f", "string", 12345, 'Z', 123.456789);
     printf("ORG_|||: %s\n\n", str2);
     clear(&str, &str2);
-//
+
     a = s21_sprintf(str, "%10hd%10ld", (short)-12345, (long)-1234567890);
     a = sprintf(str2, "%10hd%10ld", (short)-12345, (long)-1234567890);
     printf("ORG_1HD: %s\n\n", str2);
@@ -142,10 +143,37 @@ int main() {
     printf("ORG_DDD: %s\n\n", str2);
     clear(&str, &str2);
 
-    a = s21_sprintf(str, "%+-10.2f", -123.456789);
-    a = sprintf(str2, "%+-10.2f", -123.456789);
+    a = s21_sprintf(str, "%+-10.2f", -123.4000);
+    a = sprintf(str2, "%+-10.2f", -123.4000);
     printf("ORG_DDD: %s\n\n", str2);
     clear(&str, &str2);
+
+    a = s21_sprintf(str, "%cz", 65);
+    a = sprintf(str2, "%cz", 65);
+    printf("ORG_ASC: %s\n\n", str2);
+    clear(&str, &str2);
+    
+    //9234567.45 not work
+    a = s21_sprintf(str, "%g", 1234567.45);
+    a = sprintf(str2, "%g", 1234567.45);
+    printf("ORG_ggg: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "%g", 0.00000123456789);
+    a = sprintf(str2, "%g", 0.00000123456789);
+    printf("ORG_ggg: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "TEST %g TEST", 123.45);
+    a = sprintf(str2, "TEST %g TEST", 123.45);
+    printf("ORG_ggg: %s\n\n", str2);
+    clear(&str, &str2);
+
+    double number = 123456789.0;
+    int exponent = floor(log10(fabs(number)));  // Вычисление порядка числа
+    double mantissa = number / pow(10, exponent);  // Получаем мантиссу
+    mantissa = round(mantissa * 1e5) / 1e5;
+    //printf("%lf *** %d", mantissa, exponent);
 
     //a = sprintf(str3, "ERROR %f TEST", y);
     //printf("ERROR_1: %s\n", str3);

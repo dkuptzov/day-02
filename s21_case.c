@@ -1,5 +1,6 @@
 #include "s21_case.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -68,6 +69,62 @@ void case_f(char **str, param *param) {
         (*str)[param->count++] = str_float[j];
     }
     free(str_float);
+}
+
+void case_g(char **str, param *param) {
+    char *str_int;
+    int count = 0;
+    if (param->va_f >= pow(10, 6)) {
+        while (param->va_f > 2.0) {
+            param->va_f = param->va_f / 1e1;
+            count++;
+        }
+        param->va_f *= pow(10, count - 1);
+        param->va_f = round(param->va_f);
+        param->va_f -= pow(10, count - 1);
+        (*str)[param->count++] = '1';
+        (*str)[param->count++] = '.';
+        str_int = s21_atoi(param);
+        for (int j = 0 ; str_int[j] != '\0'; j++ )
+            (*str)[param->count++] = str_int[j];
+        (*str)[param->count++] = 'e';
+        (*str)[param->count++] = '+';
+        (*str)[param->count++] = '0';
+        (*str)[param->count++] = '0' + (count % 10);
+    }
+    else if (param->va_f < pow(10, -4)) {
+        while (param->va_f < 1.0) {
+            param->va_f = param->va_f * 1e1;
+            count++;
+        }
+        param->va_f *= pow(10, 5);
+        param->va_f = round(param->va_f);
+        param->va_f -= pow(10, 5);
+        (*str)[param->count++] = '1';
+        (*str)[param->count++] = '.';
+        str_int = s21_atoi(param);
+        for (int j = 0 ; str_int[j] != '\0'; j++ )
+            (*str)[param->count++] = str_int[j];
+        (*str)[param->count++] = 'e';
+        (*str)[param->count++] = '-';
+        (*str)[param->count++] = '0';
+        (*str)[param->count++] = '0' + (count % 10);
+    }
+    else {
+        if (param->va_f < 10.0) param->g = 1;
+        else if (param->va_f < 100.0) param->g = 2;
+        else if (param->va_f < 1000.0) param->g = 3;
+        else if (param->va_f < 10000.0) param->g = 4;
+        else if (param->va_f < 100000.0) param->g = 5;
+        else param->g = 6;
+        param->va_f *= pow(10, param->g - 1);
+        param->va_f = round(param->va_f);
+        str_int = s21_atoi(param);
+        for (int j = 0 ; str_int[j] != '\0'; j++ ) {
+            if (j == param->g) (*str)[param->count++] = '.';
+            (*str)[param->count++] = str_int[j];
+        }
+    }
 }
 
 void case_s(char **str, char *str_d, param *param) {
