@@ -140,12 +140,12 @@ int main() {
 
     a = s21_sprintf(str, "%-+10.2f", -123.456789);
     a = sprintf(str2, "%-+10.2f", -123.456789);
-    printf("ORG_DDD: %s\n\n", str2);
+    printf("ORG_.2F: %s\n\n", str2);
     clear(&str, &str2);
 
     a = s21_sprintf(str, "%+-10.2f", -123.4000);
     a = sprintf(str2, "%+-10.2f", -123.4000);
-    printf("ORG_DDD: %s\n\n", str2);
+    printf("ORG_.2F: %s\n\n", str2);
     clear(&str, &str2);
 
     a = s21_sprintf(str, "%cz", 65);
@@ -154,8 +154,8 @@ int main() {
     clear(&str, &str2);
     
     //9234567.45 not work
-    a = s21_sprintf(str, "%g", 1234567.45);
-    a = sprintf(str2, "%g", 1234567.45);
+    a = s21_sprintf(str, "%g", 9234567.45);
+    a = sprintf(str2, "%g", 9234567.45);
     printf("ORG_ggg: %s\n\n", str2);
     clear(&str, &str2);
 
@@ -163,9 +163,9 @@ int main() {
     a = sprintf(str2, "%g", 0.00000123456789);
     printf("ORG_ggg: %s\n\n", str2);
     clear(&str, &str2);
-
-    a = s21_sprintf(str, "TEST %g TEST", 123.45);
-    a = sprintf(str2, "TEST %g TEST", 123.45);
+//сдох тест снизу
+    a = s21_sprintf(str, "TEST %g TEST", -123.45);
+    a = sprintf(str2, "TEST %g TEST", -123.45);
     printf("ORG_ggg: %s\n\n", str2);
     clear(&str, &str2);
 

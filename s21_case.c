@@ -20,7 +20,8 @@ void case_c(char **str, param *param) {
 
 void case_u(char **str, param *param) {
     char *str_du = NULL;
-    str_du = s21_atoi(param);
+    //str_du = s21_atoi(param);
+    str_du = s21_atoi_new(param);
     param->width = (param->width > s21_strlen(str_du)) ? param->width - s21_strlen(str_du) : 0;
     if (param->flag == ' ' && str_du[0] != '-') (*str)[param->count++] = ' ';
     if (param->flag == '-') {
@@ -44,11 +45,13 @@ void case_u(char **str, param *param) {
     }
     else if (param->length == 'h') {
         param->va_int = s21_to_binary(param);
-        str_du = s21_atoi(param);
+        //str_du = s21_atoi(param);
+        str_du = s21_atoi_new(param);
     }
     else if (param->length == 'l') {
         param->va_int = s21_to_binary(param);
-        str_du = s21_atoi(param);
+        //str_du = s21_atoi(param);
+        str_du = s21_atoi_new(param);
     }
     if (param->flag != '-') {
         for (int j = 0 ; str_du[j] != '\0'; j++)
@@ -58,20 +61,23 @@ void case_u(char **str, param *param) {
 }
 
 void case_f(char **str, param *param) {
-    char *str_int, *str_float = NULL;
-    str_int = s21_atoi(param);
+    //char *str_int, *str_float = NULL;
+    char *str_int;
+    //str_int = s21_atoi(param);
+    str_int = s21_atoi_new(param);
     for (int j = 0 ; str_int[j] != '\0'; j++ ) {
         (*str)[param->count++] = str_int[j];
     }
     free(str_int);
-    str_float = s21_atof(param);
-    for (int j = 0 ; str_float[j] != '\0'; j++ ) {
-        (*str)[param->count++] = str_float[j];
-    }
-    free(str_float);
+    //str_float = s21_atof(param);
+    //for (int j = 0 ; str_float[j] != '\0'; j++ ) {
+    //    (*str)[param->count++] = str_float[j];
+    //}
+    //free(str_float);
 }
 
 void case_g(char **str, param *param) {
+    s21_atoi_new(param);
     char *str_int;
     int count = 0;
     if (param->va_f >= pow(10, 6)) {
@@ -111,17 +117,18 @@ void case_g(char **str, param *param) {
         (*str)[param->count++] = '0' + (count % 10);
     }
     else {
-        if (param->va_f < 10.0) param->g = 1;
-        else if (param->va_f < 100.0) param->g = 2;
-        else if (param->va_f < 1000.0) param->g = 3;
-        else if (param->va_f < 10000.0) param->g = 4;
-        else if (param->va_f < 100000.0) param->g = 5;
-        else param->g = 6;
-        param->va_f *= pow(10, param->g - 1);
-        param->va_f = round(param->va_f);
-        str_int = s21_atoi(param);
+        if (param->va_f < 10.0) param->g = 2;
+        else if (param->va_f < 100.0) param->g = 3;
+        else if (param->va_f < 1000.0) param->g = 4;
+        else if (param->va_f < 10000.0) param->g = 5;
+        else if (param->va_f < 100000.0) param->g = 6;
+        else param->g = 7;
+        //param->va_f *= pow(10, param->g);
+        //printf("D: %Lf\n", param->va_f);
+        //param->va_f = round(param->va_f);
+        str_int = s21_atoi_new(param);
         for (int j = 0 ; str_int[j] != '\0'; j++ ) {
-            if (j == param->g) (*str)[param->count++] = '.';
+            //if (j == param->g) (*str)[param->count++] = '.';
             (*str)[param->count++] = str_int[j];
         }
     }
