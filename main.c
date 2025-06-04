@@ -159,22 +159,106 @@ int main() {
     printf("ORG_ggg: %s\n\n", str2);
     clear(&str, &str2);
 
-    a = s21_sprintf(str, "%g", 0.00000123456789);
-    a = sprintf(str2, "%g", 0.00000123456789);
+    a = s21_sprintf(str, "%g", 0.00000000923456789);
+    a = sprintf(str2, "%g", 0.00000000923456789);
     printf("ORG_ggg: %s\n\n", str2);
     clear(&str, &str2);
-//сдох тест снизу
+
     a = s21_sprintf(str, "TEST %g TEST", -123.45);
     a = sprintf(str2, "TEST %g TEST", -123.45);
     printf("ORG_ggg: %s\n\n", str2);
     clear(&str, &str2);
 
-    double number = 123456789.0;
-    int exponent = floor(log10(fabs(number)));  // Вычисление порядка числа
-    double mantissa = number / pow(10, exponent);  // Получаем мантиссу
-    mantissa = round(mantissa * 1e5) / 1e5;
-    //printf("%lf *** %d", mantissa, exponent);
+    a = s21_sprintf(str, "TEST %G TEST", 58457468.5665743);
+    a = sprintf(str2, "TEST %G TEST", 58457468.5665743);
+    printf("ORG_GGG: %s\n\n", str2);
+    clear(&str, &str2);
 
+    a = s21_sprintf(str, "TEST %e TEST", 999.9999);
+    a = sprintf(str2, "TEST %e TEST", 999.9999);
+    printf("ORG_ .e: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "TEST %.2E TEST", 5653.0001);
+    a = sprintf(str2, "TEST %.2E TEST", 5653.0001);
+    printf("ORG_.2e: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "TEST %x TEST", -100);
+    a = sprintf(str2, "TEST %x TEST", -100);
+    printf("ORG_  x: %s\n\n", str2);
+    clear(&str, &str2);
+
+/*
+    int w = 100;
+    while (w >= 1) {
+        if (w % 2 == 0) printf("0");
+        else printf("1");
+        w /= 2; 
+    }
+    printf("\n");
+
+    long double number = 0.99988;
+    int exponent = floor(log10(fabsl(number)));  // Вычисление порядка числа
+    double mantissa = number / pow(10, exponent);  // Получаем мантиссу
+    printf("%lf *** %d\n", mantissa, exponent);
+    number *= 100000.0;
+    number = round(number);
+    number /= 10000.0;
+    printf("%Lf\n", number);
+    char x2 = '0' + ((int)number % 10);
+    printf("CHAR: %c\n", x2);
+    number -= (int)number;
+    printf("%Lf\n", number);
+    number *= 10000.0;
+    number = round(number);
+    number /= 1000.0;
+    printf("%Lf\n", number);
+    x2 = '0' + ((int)number % 10);
+    printf("CHAR: %c\n", x2);
+    number -= (int)number;
+    printf("%Lf\n", number);
+    number *= 1000.0;
+    number = round(number);
+    number /= 100.0;
+    printf("%Lf\n", number);
+    x2 = '0' + ((int)number % 10);
+    printf("CHAR: %c\n", x2);
+    number -= (int)number;
+    printf("%Lf\n", number);
+        number *= 100.0;
+    number = round(number);
+    number /= 10.0;
+    printf("%Lf\n", number);
+    x2 = '0' + ((int)number % 10);
+    printf("CHAR: %c\n", x2);
+    number -= (int)number;
+    printf("%Lf\n", number);
+        number *= 10.0;
+    number = round(number);
+    printf("%Lf\n", number);
+    x2 = '0' + ((int)number % 10);
+    printf("CHAR: %c\n", x2);
+    number -= (int)number;
+    printf("%Lf\n", number);
+*/ 
+/* 
+    int count = 0;
+    while (count < 6) {
+        long double temp = mantissa - (long long int)mantissa;
+        //printf("%d, %d, %Lf\n", count, max, temp);
+        temp *= 10;
+        //if (count < 6 - 1) temp = (long long int)temp;
+        //else temp = round(temp);
+        //str[x++] = '0' + ((long long int)temp % 10);
+        int z = (int)temp;
+        char x = '0' + (z % 10);
+        printf("CHAR: %c\n", x);
+        mantissa *= 10;
+        mantissa -= (long long int)mantissa;
+        count++;
+    }
+*/
     //a = sprintf(str3, "ERROR %f TEST", y);
     //printf("ERROR_1: %s\n", str3);
 

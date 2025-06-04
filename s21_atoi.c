@@ -66,23 +66,21 @@ char *s21_atoi_new(param *param) {
         x = s21_atoi_int(str, digit, param->va_int, param);
         str[x] = '\0';
     }
-    else if (param->type == 'f' || param->type == 'g') {
-        
+    else if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') {
         if (param->flag == '.' || param->acc == '.') {
             if (param->accuracy > 0) max = param->accuracy;
             else max = param->width;
         }
         else if (param->g != 0) max -= param->g;
+        else if (param->type == 'g' || param->type == 'G') max -= 1;
         x = s21_atoi_int(str, digit, (long long int)param->va_f, param);
         y = (param->va_f < 0) ? param->va_f * -1.0 : param->va_f;
         while (count < max) {
-            long double temp = y - (long long int)y;
-            temp *= 10;
-            if (count < max - 1) temp = (long long int)temp;
-            else temp = round(temp);
-            str[x++] = '0' + ((long long int)temp % 10);
-            y *= 10;
-            y -= (long long int)y;
+            y *= pow(10, max);
+            y = round(y);
+            y /= pow(10, max - 1);
+            str[x++] = '0' + ((int)y % 10);
+            y -= (int)y;
             count++;
         }
         //while (count++ < max) str[x++] = '0';
@@ -107,6 +105,6 @@ int s21_atoi_int(char *str, char *digit, long long int x, param *param) {
     for (int i = count - 1; i >= 0; i--) {
         str[x++] = digit[i];
     }
-    if (param->type == 'f' || param->type == 'g') str[x++] = '.';
+    if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') str[x++] = '.';
     return x;
 }

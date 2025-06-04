@@ -77,41 +77,36 @@ void case_f(char **str, param *param) {
 }
 
 void case_g(char **str, param *param) {
-    s21_atoi_new(param);
     char *str_int;
     int count = 0;
-    if (param->va_f >= pow(10, 6)) {
-        while (param->va_f > 2.0) {
+    if (param->va_f < 0) {
+        (*str)[param->count++] = '-';
+        param->va_f *= (-1.0);
+    }
+    if (param->va_f >= pow(10, 6) || ((param->type == 'e' || param->type == 'E') && param->va_f >= 1)) {
+        while (param->va_f > 10.0) {
             param->va_f = param->va_f / 1e1;
             count++;
         }
-        param->va_f *= pow(10, count - 1);
-        param->va_f = round(param->va_f);
-        param->va_f -= pow(10, count - 1);
-        (*str)[param->count++] = '1';
-        (*str)[param->count++] = '.';
-        str_int = s21_atoi(param);
+        //printf("VA: %Lf\n", param->va_f);
+        str_int = s21_atoi_new(param);
+        //printf("STR: %s\n", str_int);
         for (int j = 0 ; str_int[j] != '\0'; j++ )
             (*str)[param->count++] = str_int[j];
-        (*str)[param->count++] = 'e';
+        (*str)[param->count++] = (param->type == 'g' || param->type == 'e') ? 'e' : 'E';
         (*str)[param->count++] = '+';
         (*str)[param->count++] = '0';
         (*str)[param->count++] = '0' + (count % 10);
     }
-    else if (param->va_f < pow(10, -4)) {
+    else if (param->va_f < pow(10, -4) || ((param->type == 'e' || param->type == 'E') && param->va_f < 1)) {
         while (param->va_f < 1.0) {
             param->va_f = param->va_f * 1e1;
             count++;
         }
-        param->va_f *= pow(10, 5);
-        param->va_f = round(param->va_f);
-        param->va_f -= pow(10, 5);
-        (*str)[param->count++] = '1';
-        (*str)[param->count++] = '.';
-        str_int = s21_atoi(param);
+        str_int = s21_atoi_new(param);
         for (int j = 0 ; str_int[j] != '\0'; j++ )
             (*str)[param->count++] = str_int[j];
-        (*str)[param->count++] = 'e';
+        (*str)[param->count++] = (param->type == 'g' || param->type == 'e') ? 'e' : 'E';
         (*str)[param->count++] = '-';
         (*str)[param->count++] = '0';
         (*str)[param->count++] = '0' + (count % 10);
@@ -123,9 +118,6 @@ void case_g(char **str, param *param) {
         else if (param->va_f < 10000.0) param->g = 5;
         else if (param->va_f < 100000.0) param->g = 6;
         else param->g = 7;
-        //param->va_f *= pow(10, param->g);
-        //printf("D: %Lf\n", param->va_f);
-        //param->va_f = round(param->va_f);
         str_int = s21_atoi_new(param);
         for (int j = 0 ; str_int[j] != '\0'; j++ ) {
             //if (j == param->g) (*str)[param->count++] = '.';
@@ -147,4 +139,78 @@ void case_s(char **str, char *str_d, param *param) {
     if (param->flag != '-')
         for (int j = 0 ; str_d[j] != '\0'; j++ )
             (*str)[param->count++] = str_d[j];
+}
+
+void case_x(char **str, param *param) {
+    int count = 0, count_revers = 0, plus = 0;
+    long long int x;
+    char *str_x;
+    str_x = calloc(1024 + 1, sizeof(char));
+    while (param->va_int >= 0) {
+        x = param->va_int % 16;
+        param->va_int /= 16;
+        if (x > 9) {
+            switch (x % 10) {
+                case 0:
+                    str_x[count++] = (param->type == 'x') ? 'a' : 'A';
+                    break;
+                case 1:
+                    str_x[count++] = (param->type == 'x') ? 'b' : 'B';
+                    break;
+                case 2:
+                    str_x[count++] = (param->type == 'x') ? 'c' : 'C';
+                    break;
+                case 3:
+                    str_x[count++] = (param->type == 'x') ? 'd' : 'd';
+                    break;
+                case 4:
+                    str_x[count++] = (param->type == 'x') ? 'e' : 'E';
+                    break;
+                case 5:
+                    str_x[count++] = (param->type == 'x') ? 'f' : 'F';
+                    break;
+                default:
+                    break;
+            }
+        }
+        else str_x[count++] = '0' + (x % 10);
+    }
+    if (param->va_int != 0) str_x[count++] = '0' + (param->va_int % 10);
+    str_x[count] = '\0';
+    for (int i = count - 1; i >= 0; i--) {
+        (*str)[param->count++] = str_x[i];
+    }
+    // for -
+    char *binary_str_revers, *binary_str;
+    binary_str_revers = calloc(1024 + 1, sizeof(char));
+    binary_str = calloc(1024 + 1, sizeof(char));
+    if (param->va_int < 0) {
+        param->va_int *= -1;
+        while (param->va_int > 0) {
+            binary_str_revers[count_revers++] = (param->va_int % 2 == 0) ? '0' : '1';
+            param->va_int /= 2;
+        }
+        printf("STR: %d\n", count);
+        count = 0;
+        for (int i = count_revers - 1; i >= 0; i--)
+            binary_str[count++] = binary_str_revers[i];
+        printf("STR: %s\n", binary_str);
+        //count /= 4;
+        //if (binary_str[count - 1] == '1') {
+        for (int i = count - 1; i >= 0; i--) {
+            if (binary_str[i] == '1' && i == count - 1)
+                binary_str[i] = '1';
+            else if (binary_str[i] == '0' && i == count - 1)
+                plus = 1;
+            else if (binary_str[i] == '1' && plus == 1)
+                plus = 0;
+            else if (binary_str[i] == '0' && plus == 0) 
+                binary_str[i] = '1';
+            else if (binary_str[i] == '1' && plus == 0) 
+                binary_str[i] = '0';
+        }
+        printf("STR: %s\n", binary_str);
+    }
+
+    free(str_x);
 }
