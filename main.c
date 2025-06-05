@@ -153,7 +153,6 @@ int main() {
     printf("ORG_ASC: %s\n\n", str2);
     clear(&str, &str2);
     
-    //9234567.45 not work
     a = s21_sprintf(str, "%g", 9234567.45);
     a = sprintf(str2, "%g", 9234567.45);
     printf("ORG_ggg: %s\n\n", str2);
@@ -183,10 +182,25 @@ int main() {
     a = sprintf(str2, "TEST %.2E TEST", 5653.0001);
     printf("ORG_.2e: %s\n\n", str2);
     clear(&str, &str2);
-
+//все надо проверить на 0 и проверить как работают с макс и мин и как себя ведет оригинал
     a = s21_sprintf(str, "TEST %x TEST", -100);
     a = sprintf(str2, "TEST %x TEST", -100);
-    printf("ORG_  x: %s\n\n", str2);
+    printf("ORG_ xX: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "TEST %X TEST", -1999999999);
+    a = sprintf(str2, "TEST %X TEST", -1999999999);
+    printf("ORG_-xX: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "TEST %o TEST", 123557546);
+    a = sprintf(str2, "TEST %o TEST", 123557546);
+    printf("ORG_OOO: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "TEST %o TEST", -100);
+    a = sprintf(str2, "TEST %o TEST", -100);
+    printf("ORG_OOO: %s\n\n", str2);
     clear(&str, &str2);
 
 /*

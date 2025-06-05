@@ -97,9 +97,17 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     //    str[param.count++] = str_d[j];
                     break;
                 case 'x':
+                case 'X':
                     int temp_x = va_arg(args, int);
                     param.va_int = (long long int)temp_x;
-                    case_x(&str_ready, &param);
+                    if (param.va_int >= 0) case_x_plus(&str_ready, &param);
+                    else case_x_minus(&str_ready, &param);
+                    break;
+                case 'o':
+                    int temp_o = va_arg(args, int);
+                    param.va_int = (long long int)temp_o;
+                    if (param.va_int >= 0) case_o_plus(&str_ready, &param);
+                    else case_o_minus(&str_ready, &param);
                     break;
                 default:
                     param.error = 1;

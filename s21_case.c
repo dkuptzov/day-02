@@ -141,8 +141,8 @@ void case_s(char **str, char *str_d, param *param) {
             (*str)[param->count++] = str_d[j];
 }
 
-void case_x(char **str, param *param) {
-    int count = 0, count_revers = 0, plus = 0;
+void case_x_plus(char **str, param *param) {
+    int count = 0;
     long long int x;
     char *str_x;
     str_x = calloc(1024 + 1, sizeof(char));
@@ -180,8 +180,13 @@ void case_x(char **str, param *param) {
     for (int i = count - 1; i >= 0; i--) {
         (*str)[param->count++] = str_x[i];
     }
-    // for -
-    char *binary_str_revers, *binary_str;
+}
+
+void case_x_minus(char **str, param *param) {
+    int count = 0, count_revers = 0, plus = 0;
+    long long int result;
+    char *binary_str_revers, *binary_str, *str_x;
+    str_x = calloc(1024 + 1, sizeof(char));
     binary_str_revers = calloc(1024 + 1, sizeof(char));
     binary_str = calloc(1024 + 1, sizeof(char));
     if (param->va_int < 0) {
@@ -190,13 +195,11 @@ void case_x(char **str, param *param) {
             binary_str_revers[count_revers++] = (param->va_int % 2 == 0) ? '0' : '1';
             param->va_int /= 2;
         }
-        printf("STR: %d\n", count);
+        int zero = 4 - (count_revers % 4), multi = 0;
         count = 0;
+        while (zero-- != 0) binary_str[count++] = '0';
         for (int i = count_revers - 1; i >= 0; i--)
             binary_str[count++] = binary_str_revers[i];
-        printf("STR: %s\n", binary_str);
-        //count /= 4;
-        //if (binary_str[count - 1] == '1') {
         for (int i = count - 1; i >= 0; i--) {
             if (binary_str[i] == '1' && i == count - 1)
                 binary_str[i] = '1';
@@ -209,8 +212,84 @@ void case_x(char **str, param *param) {
             else if (binary_str[i] == '1' && plus == 0) 
                 binary_str[i] = '0';
         }
-        printf("STR: %s\n", binary_str);
+        count_revers = 0;
+        for (int j = 0; j < 8 - (count / 4); j++) str_x[count_revers++] = 'f';
+        multi = 3;
+        result = 0;
+        for (int i = 0; i < count; i++) {
+            if (binary_str[i] == '1')
+                result += (pow(2, multi));
+            multi--;
+            if ((i + 1) % 4 == 0 && i != 0) {
+                if (result > 9) {
+                    switch (result % 10) {
+                        case 0:
+                            str_x[count_revers++] = (param->type == 'x') ? 'a' : 'A';
+                            break;
+                        case 1:
+                            str_x[count_revers++] = (param->type == 'x') ? 'b' : 'B';
+                            break;
+                        case 2:
+                            str_x[count_revers++] = (param->type == 'x') ? 'c' : 'C';
+                            break;
+                        case 3:
+                            str_x[count_revers++] = (param->type == 'x') ? 'd' : 'd';
+                            break;
+                        case 4:
+                            str_x[count_revers++] = (param->type == 'x') ? 'e' : 'E';
+                            break;
+                        case 5:
+                            str_x[count_revers++] = (param->type == 'x') ? 'f' : 'F';
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else str_x[count_revers++] = '0' + (result % 10);
+                result = 0;
+                plus = 0;
+                multi = 3;
+            }
+        }
     }
-
+    str_x[count_revers] = '\0';
+    for (int i = 0; i < count_revers; i++) {
+        (*str)[param->count++] = str_x[i];
+    }
     free(str_x);
+}
+
+void case_o_plus(char **str, param *param) {
+    int count = 0;
+    char *str_o;
+    str_o = calloc(1024 + 1, sizeof(char));
+    while (param->va_int > 0) {
+        str_o[count++] = '0' + param->va_int % 8;
+        param->va_int /= 8;
+    }
+    for (int i = count - 1; i >= 0; i--) (*str)[param->count++] = str_o[i];
+}
+
+void case_o_minus(char **str, param *param) {
+    param->length = 0;
+    (*str)[param->count] = '\0';
+    int count = 0, count_revers = 0, plus = 0;
+    plus++;
+    //long long int result;
+    //char *binary_str_revers, *binary_str, *str_o;
+    char *binary_str_revers, *binary_str;
+    //str_o = calloc(1024 + 1, sizeof(char));
+    binary_str_revers = calloc(1024 + 1, sizeof(char));
+    binary_str = calloc(1024 + 1, sizeof(char));
+    param->va_int *= -1;
+    while (param->va_int > 0) {
+        binary_str_revers[count_revers++] = (param->va_int % 2 == 0) ? '0' : '1';
+        param->va_int /= 2;
+    }
+    printf("COUNT: %d\n", count_revers);
+    printf("STR0: %s\n", binary_str_revers);
+    for (int i = 0; i < 32 - count_revers; i++) binary_str[count++] = '0';
+    printf("STR1: %s\n", binary_str);
+    for (int i = count_revers - 1; i >= 0; i--) binary_str[count++] = binary_str_revers[i];
+    printf("STR2: %s\n", binary_str);
 }
