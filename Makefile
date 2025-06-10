@@ -3,7 +3,7 @@ CFLAGS = -Wall -Werror -Wextra -std=c11
 GREP = main.c s21_atoi.c s21_binary.c s21_case.c s21_sprintf.c
 OBJ = s21_atoi.o s21_binary.o s21_case.o s21_sprintf.o
 TEST = check_tests
-QUEST1 = s21_grep
+QUEST1 = s21_sprintf
 QUEST2 = test
 AR = ar
 L = -lcheck -lsubunit -lm

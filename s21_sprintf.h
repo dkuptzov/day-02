@@ -10,9 +10,11 @@ typedef struct param {
   int accuracy;
   char length;
   char flag;
+  char flag2;
   char type;
   char c;
   char acc;
+  char sign;
   long long int va_int;
   long double va_f;
 } param;

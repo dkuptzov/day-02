@@ -27,6 +27,7 @@ long long int s21_to_binary(param *param) {
         for (int i = count_revers - 1; i >= 0; i--)
             binary_str[count++] = binary_str_revers[i];
     }
+    //printf("STR: %s\n", binary_str);
     if (do_it && binary_str[count - 16] == '1') {
         for (int i = count - 1; i >= count - 16; i--) {
             if (binary_str[i] == '1' && i == count - 1)

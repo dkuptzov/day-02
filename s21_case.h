@@ -14,5 +14,10 @@ void case_x_minus(char **str, param *param);
 void case_s(char **str, char *str_d, param *param);
 void case_o_plus(char **str, param *param);
 void case_o_minus(char **str, param *param);
+void case_p(char **str, char *str_d, param *param);
+char x8(char **str);
+
+
+//void param_flag_minus(char ***str, char **str_du, param *param);
 
 #endif

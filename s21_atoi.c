@@ -67,25 +67,34 @@ char *s21_atoi_new(param *param) {
         str[x] = '\0';
     }
     else if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') {
-        if (param->flag == '.' || param->acc == '.') {
+        //printf("param->accuracy: %d\n", param->accuracy);
+        //if (param->flag == '.' || param->acc == '.') {
+        if (param->flag == '.') {
             if (param->accuracy > 0) max = param->accuracy;
             else max = param->width;
         }
         else if (param->g != 0) max -= param->g;
-        else if (param->type == 'g' || param->type == 'G') max -= 1;
+        //printf("max2: %d\n", max);
+        if ((param->type == 'g' || param->type == 'G') && param->flag != '#') max -= 1;
+        //printf("PARAM2: %d\n", max);
         x = s21_atoi_int(str, digit, (long long int)param->va_f, param);
+        //printf("STR20: %s\n", str);
         y = (param->va_f < 0) ? param->va_f * -1.0 : param->va_f;
+        //printf("PARAM: %Lf %d %d\n", param->va_f, count, max);
         while (count < max) {
             y *= pow(10, max);
             y = round(y);
             y /= pow(10, max - 1);
             str[x++] = '0' + ((int)y % 10);
+            //printf("STR100: %s\n", str);
             y -= (int)y;
             count++;
         }
         //while (count++ < max) str[x++] = '0';
+        //printf("STR10: %s\n", str);
         if (str[--x] == '.') str[x] = '\0';
         else str[++x] = '\0';
+        //printf("STR:11 %s\n", str);
     }
     //printf("STR: %s\n", str);
     free(digit);
@@ -93,6 +102,7 @@ char *s21_atoi_new(param *param) {
 }
 
 int s21_atoi_int(char *str, char *digit, long long int x, param *param) {
+    //printf("X: %lld\n", x);
     int count = 0;
     long long int x_first = x;
     if (x < 0) x *= -1;
@@ -105,6 +115,9 @@ int s21_atoi_int(char *str, char *digit, long long int x, param *param) {
     for (int i = count - 1; i >= 0; i--) {
         str[x++] = digit[i];
     }
+    if (x == 0) str[x++] = '0';
     if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') str[x++] = '.';
+    //printf("STR1111111: %s\n", str);
+    //printf("X: %lld\n", x);
     return x;
 }
