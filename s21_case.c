@@ -265,10 +265,11 @@ void case_x_plus(char **str, param *param) {
     }
     //if (param->va_int != 0) str_x[count++] = '0' + (param->va_int % 10);
     str_x[count] = '\0';
-    //printf("param->accuracy: %d\n", param->accuracy);
+    //printf("param->width: %d\n", param->width);
     param->width = (param->width > s21_strlen(str_x)) ? param->width - s21_strlen(str_x) : -1;
-    if (param->flag == '#' || param->flag2 == '#') param->width -= 2;
-    if (param->width > 0 && param->flag != '-') {
+    //printf("param->width: %d\n", param->width);
+    if ((param->flag == '#' || param->flag2 == '#') && param->va_int != 0) param->width -= 2;
+    if (param->width > 0 && param->flag != '-' && param->accuracy == 0) {
         s21_alignment(&str, param);
     }
     else if (param->accuracy > 0) {

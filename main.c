@@ -533,6 +533,27 @@ int main() {
     a = s21_sprintf(str, "%x", 0);
     a = sprintf(str2, "%x", 0);
     printf("ORG_106: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "%#x%#x%3x%#32x%#-1x", 87, 1222224535, -13, -0, 123213123);
+    printf("STR1_134: %d * %s\n", a, str);
+    a = sprintf(str2, "%#x%#x%3x%#32x%#-1x", 87, 1222224535, -13, -0, 123213123);
+    printf("STR2_134: %d * %s\n", a, str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "%*.6x", 11, 0);
+    printf("STR1_134: %d * %s\n", a, str);
+    a = sprintf(str2, "%*.6x", 11, 0);
+    printf("STR2_134: %d * %s\n", a, str2);
+    clear(&str, &str2);
+
+    char *format12345 = "%-5.3c Hello! ABOBA";
+    char val12345 = 'c';
+    a = s21_sprintf(str, format12345, val12345, 'c');
+    printf("STR1_134: %d * %s\n", a, str);
+    a = sprintf(str2, format12345, val12345, 'c');
+    printf("STR2_134: %d * %s\n", a, str2);
+    clear(&str, &str2);
 
 /*
     long double val191 = 0.4134121;

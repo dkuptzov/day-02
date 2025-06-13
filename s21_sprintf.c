@@ -32,17 +32,29 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                 //printf("param.flag0: %c\n", param.flag);
                 if (str_format[i] == '+') param.sign = '+';
                 //
+                else if (param.flag == '0' && str_format[i] == '*') param.width = va_arg(args, int) - param.width;
                 else if (param.flag == ' ' && param.width == 0 && str_format[i] == '.') param.flag2 = '.';
                 //
                 else if (param.flag == '#' && str_format[i] == '-') {
                     param.flag = '-';
                     param.flag2 = '#';
                 }
-                else if (str_format[i] == '*' && param.flag == '.') param.accuracy = va_arg(args, int) - param.accuracy;
-                else if (str_format[i] == '*') param.width = va_arg(args, int) - param.width;
+                //else if (str_format[i] == '*' && param.flag == '.') param.accuracy = va_arg(args, int) - param.accuracy;
+                else if (str_format[i] == '*' && param.flag == '.') {
+                    param.accuracy = param.width;
+                    param.width = 0;
+                }
+                else if (str_format[i] == '.' && param.flag == '*') {
+                    param.flag = '.';
+                    param.accuracy = param.width;
+                }
+                else if (str_format[i] == '*') {
+                    param.width = va_arg(args, int) - param.width;
+                    param.flag = '*';
+                }
                 else if (str_format[i] == '-' || str_format[i] == ' ' || 
                     str_format[i] == '.' || str_format[i] == '#' || 
-                    str_format[i] == '*' || (str_format[i] == '0' && param.flag == 'x')) param.flag = str_format[i];
+                    (str_format[i] == '0' && param.flag == 'x')) param.flag = str_format[i];
                 else if (str_format[i] >= '0' && str_format[i] <= '9' && param.flag == '.') {
                     while (str_format[i] >= '0' && str_format[i] <= '9')
                         str_sing[param.count_sign++] = str_format[i++];
@@ -224,7 +236,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
     if (param.error == 0)
         for (int i = 0; str_ready[i] != '\0'; i++)
             str[i] = str_ready[i];
-    printf("STR_END: %s\n", str);
+    //printf("STR_END: %s\n", str);
     return param.count;
 }
 
@@ -243,14 +255,17 @@ void s21_alignment(char ***str, param *param) {
         for (int i = 0; i < param->width; i++)
             (**str)[param->count++] = '0';
     */
-    //printf("PARAM: %d ** %d\n", param->width, param->accuracy);
+    //printf("PARAM: %d ** %d ** %c\n", param->width, param->accuracy, param->flag);
     if (param->width > 0 && param->flag == '0')
         for (int i = 0; i < param->width; i++)
             (**str)[param->count++] = '0';
-    else if (param->width > 0)
+    else if (param->width > 0 && param->type == 'c')
         for (int i = 0; i < param->width; i++)
             (**str)[param->count++] = ' ';
-    else if (param->accuracy > 0)
+    else if (param->width > 0)
+        for (int i = 0; i < param->width - param->accuracy; i++)
+            (**str)[param->count++] = ' ';
+    if (param->accuracy > 0 && param->type != 'c')
         for (int i = 0; i < param->accuracy; i++)
             (**str)[param->count++] = '0';
 }
