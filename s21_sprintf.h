@@ -17,6 +17,7 @@ typedef struct param {
   char sign;
   long long int va_int;
   long double va_f;
+  int its_float;
 } param;
 
 //char *s21_atoi(param *param);

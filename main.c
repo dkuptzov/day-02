@@ -29,6 +29,7 @@ int main() {
         clear(&str, &str2);
     }
 */
+
     a = s21_sprintf(str, "NUMBER %c TEST", c);
     a = sprintf(str2, "NUMBER %c TEST", c);
     printf("ORG_CCC: %s\n\n", str2);
@@ -364,6 +365,188 @@ int main() {
     printf("ORG_uuu: %s\n\n", str2);
     clear(&str, &str2);
 
+    char format18[] = "%-5.3c%c%c%c%c Hello! ABOBA";
+    char val = 'c';
+    a = s21_sprintf(str, format18, val, 'c', 'a', 'b', 'b');
+    a = sprintf(str2, format18, val, 'c', 'a', 'b', 'b');
+    printf("ORG_060: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char format19[] = "%-5.3c";
+    a = s21_sprintf(str, format19, val);
+    a = sprintf(str2, format19, val);
+    printf("ORG_061: %s\n\n", str2);
+    clear(&str, &str2);
+    //60 && 61 test.c -> error
+
+    char format20[] = "%15c";
+    a = s21_sprintf(str, format20, val);
+    a = sprintf(str2, format20, val);
+    printf("ORG_062: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char format21[] = "%.15s";
+    a = s21_sprintf(str, format21, "I LOVE STRINGS AND TESTS AND SCHOOL21 NO JOKE");
+    a = sprintf(str2, format21, "I LOVE STRINGS AND TESTS AND SCHOOL21 NO JOKE");
+    printf("ORG_063: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char format65[] = "%-15.9s";
+    a = s21_sprintf(str, format65, "69 IS MY1FAVORITE NUMBER");
+    a = sprintf(str2, format65, "69 IS MY1FAVORITE NUMBER");
+    printf("ORG_065: %s\n\n", str2);
+    clear(&str, &str2);
+
+    //char format117[] = "NUMBER 17: %15s TEST";
+    a = s21_sprintf(str, "NUMBER 17: %15s TEST", "Hello World!");
+    a = sprintf(str2, "NUMBER 17: %15s TEST", "Hello World!");
+    printf("ORG_065: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char format69[] = "%15p";
+    a = s21_sprintf(str, format69, format69);
+    a = sprintf(str2, format69, format69);
+    printf("ORG_069: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char format71[] = "%15p";
+    char *ptr = NULL;
+    a = s21_sprintf(str, format71, ptr);
+    a = sprintf(str2, format71, ptr);
+    printf("ORG_071: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val74 = 15.35;
+    char *format74 = "%20Lf";
+    a = s21_sprintf(str, format74, val74);
+    a = sprintf(str2, format74, val74);
+    printf("ORG_074: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val77 = -15.35581134;
+    char *format77 = "%.14Lf";
+    a = s21_sprintf(str, format77, val77);
+    a = sprintf(str2, format77, val77);
+    printf("ORG_077: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val78 = 72537572375.1431341;
+    char *format78 = "%Lf";
+    a = s21_sprintf(str, format78, val78);
+    a = sprintf(str2, format78, val78);
+    printf("ORG_078: %s\n\n", str2);
+    clear(&str, &str2);
+
+    float val80 = 0;
+    char *format80 = "% f";
+    a = s21_sprintf(str, format80, val80);
+    a = sprintf(str2, format80, val80);
+    printf("ORG_080: %s\n\n", str2);
+    clear(&str, &str2);
+
+    float val81 = 0;
+    double val81_1 = 0;
+    long double val81_2 = 3515315.153151;
+    float val81_3 = 5.5;
+    double val81_4 = 9851.51351;
+    long double val81_5 = 95919539159.53151351131;
+    char *format81 = "% .f %.lf %Lf %f %lf %Lf";
+    a = s21_sprintf(str, format81, val81, val81_1, val81_2, val81_3, val81_4, val81_5);
+    a = sprintf(str2, format81, val81, val81_1, val81_2, val81_3, val81_4, val81_5);
+    printf("ORG_081: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val82 = 15.35;
+    char *format82 = "%.17Le";
+    a = s21_sprintf(str, format82, val82);
+    a = sprintf(str2, format82, val82);
+    printf("ORG_082: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val83 = 15.35;
+    char *format83 = "%.0Le";
+    a = s21_sprintf(str, format83, val83);
+    a = sprintf(str2, format83, val83);
+    printf("ORG_083: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val001 = 95919539159.53151351131;
+    char *format001 = "%Lf";
+    a = s21_sprintf(str, format001, val001);
+    a = sprintf(str2, format001, val001);
+    printf("ORG_001: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val85 = 0.000000000000000123;
+    char *format85 = "%.15Le";
+    a = s21_sprintf(str, format85, val85);
+    a = sprintf(str2, format85, val85);
+    printf("ORG_085: %s\n\n", str2);
+    clear(&str, &str2);
+
+    long double val87 = 72537572375.1431341;
+    char *format87 = "%Le";
+    a = s21_sprintf(str, format87, val87);
+    a = sprintf(str2, format87, val87);
+    printf("ORG_087: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char *format88 = "%015E";
+    float val88 = 0;
+    a = s21_sprintf(str, format88, val88);
+    a = sprintf(str2, format88, val88);
+    printf("ORG_088: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char *format89 = "%15e";
+    float val89 = 0;
+    a = s21_sprintf(str, format89, val89);
+    a = sprintf(str2, format89, val89);
+    printf("ORG_089: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char *format90 = "% .0e %.le %Le %e %le %Le";
+    float val90 = 0;
+    double val901 = 0;
+    long double val902 = 3515315.153151;
+    float val903 = 5.5;
+    double val904 = 0.094913941;
+    long double val905 = 95919539159.53151351131;
+    a = s21_sprintf(str, format90, val90, val901, val902, val903, val904, val905);
+    a = sprintf(str2, format90, val90, val901, val902, val903, val904, val905);
+    printf("ORG_090: %s\n\n", str2);
+    clear(&str, &str2);
+
+    char *format91 = "%.17LE";
+    long double val91 = 4134121;
+    a = s21_sprintf(str, format91, val91);
+    a = sprintf(str2, format91, val91);
+    printf("ORG_091: %s\n\n", str2);
+    clear(&str, &str2);
+    format91 = "%.17Le";
+    val91 = 4134121.1;
+    a = s21_sprintf(str, format91, val91);
+    a = sprintf(str2, format91, val91);
+    printf("ORG_091: %s\n\n", str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "%x", 0);
+    a = sprintf(str2, "%x", 0);
+    printf("ORG_106: %s\n\n", str2);
+
+/*
+    long double val191 = 0.4134121;
+    //long double val191 = 0.1535;
+    int time = 0;
+    while (time++ < 10) {
+        val191 *= pow(10, 17);
+        printf("%d: %Lf\n", time, val191);
+        val191 /= pow(10, 16);
+        printf("%d: %Lf\n", time, val191);
+        val191 -= (long long int)val191;
+        printf("%d: %Lf\n", time, val191);
+    }
+*/
 
     /*char *format = "%lu, %u, %hu, %.5u, %5.u";
     unsigned long int val = 949149114140;
