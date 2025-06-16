@@ -547,12 +547,29 @@ int main() {
     printf("STR2_134: %d * %s\n", a, str2);
     clear(&str, &str2);
 
-    char *format12345 = "%-5.3c Hello! ABOBA";
-    char val12345 = 'c';
-    a = s21_sprintf(str, format12345, val12345, 'c');
+    printf("=================================================================\n");
+    a = s21_sprintf(str, "%*.*X", 13, 5, -419);
+    //a = s21_sprintf(str, "%*.*X", 666, 999, 13);
     printf("STR1_134: %d * %s\n", a, str);
-    a = sprintf(str2, format12345, val12345, 'c');
+    a = sprintf(str2, "%*.*X", 13, 5, -419);
+    //a = sprintf(str2, "%*.*X", 666, 999, 13);
     printf("STR2_134: %d * %s\n", a, str2);
+    clear(&str, &str2);
+
+    char format160[] = "%8.3c";
+    a = s21_sprintf(str, format160, 'a');
+    printf("STR1_160: %d * %s\n", a, str);
+    a = sprintf(str2, format160, 'a');
+    printf("STR2_160: %d * %s\n", a, str2);
+    clear(&str, &str2);
+
+    printf("=================================================================\n");
+    //char format161[] = "%.0g";
+    //double hex161 = 0.123000;
+    a = s21_sprintf(str, "%hx", -111111);
+    printf("STR1_161: %d * %s\n", a, str);
+    a = sprintf(str2, "%hx", -111111);
+    printf("STR2_161: %d * %s\n", a, str2);
     clear(&str, &str2);
 
 /*

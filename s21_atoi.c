@@ -84,36 +84,40 @@ char *s21_atoi_new(param *param) {
         //////////////////////////////////////////TEST
         //x = s21_atoi_int(str, digit, (long long int)param->va_f, param);
         x = s21_atoi_int(str, digit, param->va_f, param);
-        //printf("ATOI_X: %lld\n", x);
+        printf("ATOI_X: %lld\n", x);
+        //int a;
+        //scanf("%d", &a);
         //printf("STR200: %s\n", str);
         y = (param->va_f < 0) ? param->va_f * -1.0 : param->va_f;
         //if ((param->type == 'e' || param->type == 'E') && y >= 10) y /= 10;
         //printf("ATOI_Y: %Lf\n", y);
         //printf("PARAM: %Lf %d %d\n", param->va_f, count, max);
         y -= (long long int)y;
-        //printf("ATOI_Y: %Lf\n", y);
+        printf("ATOI_Y: %Lf\n", y);
         //printf("STR10: %s\n", str);
         ///////допроверять работу через тесты
         long long int z = 0;
-        if (param->its_float == 0) {
+        if (param->its_float == 0 && param->length == 'L') {
             while (count < max) {
                 y *= pow(10, max);
                 //%.17Le %.17LE
-                //printf("ATOI_Y1: %Lf\n", y);
+                printf("ATOI_Y1: %Lf\n", y);
                 if (param->type != 'e' && param->type != 'E') y = round(y);
-                //printf("ATOI_Y2: %Lf\n", y);
+                printf("ATOI_Y2: %Lf\n", y);
                 y /= pow(10, max - 1);
-                //printf("ATOI_Y3: %Lf\n", y);
-                if (count == max -1) z = round(y);
+                printf("ATOI_Y3: %Lf\n", y);
+                if (count == max - 1) z = round(y);
                 else z = (long long int)y;
+                printf("ATOI_Z: %lld\n", z);
                 str[x++] = '0' + (z % 10);
-                //printf("STR!!!: %s\n", str);
+                printf("STR!!!: %s\n", str);
                 y -= (long long int)y;
                 count++;
             }
         }
         else {
             while (count < max) {
+                //printf("TUT2\n");
                 int test = count;
                 while (test++ < max) y *= 10;
                 //printf("ATOI_Y1: %Lf\n", y);
