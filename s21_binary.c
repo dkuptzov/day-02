@@ -11,6 +11,7 @@ long long int s21_to_binary(param *param) {
     binary_str = calloc(1024 + 1, sizeof(char));
     int count = 0, count_revers = 0, do_it = 0, multi = 0, plus = 0;
     long long int x = param->va_int, result = 0;
+    printf("param111: %lld\n", param->va_int);
     if (param->type == 'd' && param->length == 'x') {
         if (x > INT_MAX || x < INT_MIN) do_it = 1;
     } else if (param->type == 'u') {
@@ -19,15 +20,17 @@ long long int s21_to_binary(param *param) {
         if (x > LONG_MAX || x < LONG_MIN) do_it = 1;
     } else if (param->length == 'h')
         if (x > SHRT_MAX || x < SHRT_MIN) do_it = 1;
+    printf("do_it: %d\n", do_it);
     if (do_it) {
         while (x > 0) {
             binary_str_revers[count_revers++] = (x % 2 == 0) ? '0' : '1';
             x /= 2;
         }
+        printf("STR: %s\n", binary_str_revers);
         for (int i = count_revers - 1; i >= 0; i--)
             binary_str[count++] = binary_str_revers[i];
     }
-    //printf("STR: %s\n", binary_str);
+    printf("STR: %s\n", binary_str);
     if (do_it && binary_str[count - 16] == '1') {
         for (int i = count - 1; i >= count - 16; i--) {
             if (binary_str[i] == '1' && i == count - 1)
@@ -40,10 +43,19 @@ long long int s21_to_binary(param *param) {
             }
             else if (binary_str[i] == '0' && plus == 0) result += (pow(2, multi));
             multi++;
+            printf("result: %lld\n", result);
         }
         result *= -1;
     }
-    else result = x;
+    //else result = x;
+    else {
+        for (int i = count - 1; i >= count - 16; i--) {
+            if (binary_str[i] == '1')
+                result += (pow(2, multi));
+            multi++;
+            printf("result: %lld\n", result);
+        }
+    }
     free(binary_str);
     free(binary_str_revers);
     return result;
