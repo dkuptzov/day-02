@@ -2787,7 +2787,7 @@ START_TEST(test_170)
     char *str1, *str2;
     str1 = calloc(1024 + 1, sizeof(char));
     str2 = calloc(1024 + 1, sizeof(char));
-    char format[] = "% 0.0hu% 0.0hd % 0.0hf";
+    char format[] = "% 0.0hu% 0.0hd % 0.0f";
     ck_assert_int_eq(
         s21_sprintf(str1, format, 222, 33333333333, -166513.1232),
         sprintf(str2, format, 222, 33333333333, -166513.1232));
@@ -3675,12 +3675,11 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_146);
     tcase_add_test(tc_core, test_147);
     tcase_add_test(tc_core, test_148);
-/*
     tcase_add_test(tc_core, test_149);
     tcase_add_test(tc_core, test_150);
     tcase_add_test(tc_core, test_151);
     tcase_add_test(tc_core, test_152);
-    //tcase_add_test(tc_core, test_153);
+    tcase_add_test(tc_core, test_153);
     tcase_add_test(tc_core, test_154);
     tcase_add_test(tc_core, test_155);
     tcase_add_test(tc_core, test_156);
@@ -3694,10 +3693,12 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_164);
     tcase_add_test(tc_core, test_165);
     tcase_add_test(tc_core, test_166);
-    //tcase_add_test(tc_core, test_167);
+    tcase_add_test(tc_core, test_167);
     //tcase_add_test(tc_core, test_168);
-    //tcase_add_test(tc_core, test_169);
-    //tcase_add_test(tc_core, test_170);
+    //333.3321300000000064512
+    //333.3321300000000064756
+    tcase_add_test(tc_core, test_169);
+    tcase_add_test(tc_core, test_170);
     tcase_add_test(tc_core, test_171);
     tcase_add_test(tc_core, test_172);
     tcase_add_test(tc_core, test_173);
@@ -3709,7 +3710,7 @@ Suite* make_suite(void)
     //tcase_add_test(tc_core, test_179);
     //tcase_add_test(tc_core, test_180);
     tcase_add_test(tc_core, test_181);
-    //tcase_add_test(tc_core, test_182);
+    tcase_add_test(tc_core, test_182);
     tcase_add_test(tc_core, test_183);
     tcase_add_test(tc_core, test_184);
     tcase_add_test(tc_core, test_185);
@@ -3724,12 +3725,13 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_194);
     tcase_add_test(tc_core, test_195);
     tcase_add_test(tc_core, test_196);
-    //tcase_add_test(tc_core, test_197);
+    tcase_add_test(tc_core, test_197);
     tcase_add_test(tc_core, test_198);
     tcase_add_test(tc_core, test_199);
-    //tcase_add_test(tc_core, test_200);
-    //tcase_add_test(tc_core, test_201);
-    //tcase_add_test(tc_core, test_202);
+    tcase_add_test(tc_core, test_200);
+    tcase_add_test(tc_core, test_201);
+    tcase_add_test(tc_core, test_202);
+/*
     //tcase_add_test(tc_core, test_203);
     //tcase_add_test(tc_core, test_204);
     //tcase_add_test(tc_core, test_205);

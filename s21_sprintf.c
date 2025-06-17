@@ -52,6 +52,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                             param.width = (va_arg(args, int) - param.width > 0) ? va_arg(args, int) - param.width : param.width;
                         }
                 else if (param.flag == ' ' && param.width == 0 && str_format[i] == '.') {
+                //else if (param.flag == ' ' && str_format[i] == '.') {
                     printf("TUT13\n");
                     param.flag2 = '.';
                 }
@@ -185,14 +186,14 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     //str[param.count++] = va_arg(args, int);
                     break;
                 case 'd':
-                    if (param.length == 'l') {
-                        long int temp = va_arg(args, long int);
-                        param.va_int = (long long int)temp;
-                    }
-                    else {
-                        int temp = va_arg(args, int);
-                        param.va_int = (long long int)temp;
-                    }
+                    //if (param.length == 'l') {
+                    //    long int temp = va_arg(args, long int);
+                    //    param.va_int = (long long int)temp;
+                    //}
+                    //else param.va_int = va_arg(args, int);
+                    param.va_int = type(va_arg(args, long long int), &param);
+                    //param.va_int = va_arg(args, long long int);
+                    printf("main: %lld\n", param.va_int);
                     case_u(&str_ready, &param);
                     break;
                 case 'e':
@@ -298,10 +299,14 @@ void s21_alignment(char ***str, param *param) {
     */
     printf("s21_alignment: %d ** %d ** %c ** %c ** %lld\n", param->width, param->accuracy, param->flag, param->flag2, param->va_int);
     printf("param->type: %c\n", param->type);
-    if ((param->type == 'x' || param->type == 'X') && param->va_int < 0) {
+    //if ((param->type == 'x' || param->type == 'X') && param->va_int < 0) {
+    if (param->type == 'x' || param->type == 'X') {
         if (param->width > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
+        else if (param->accuracy > 0)
+            for (int i = 0; i < param->accuracy; i++)
+                (**str)[param->count++] = '0';
     }
     else if (param->type == 'u' || param->type == 'd' || param->type == 'f') {
         if (param->width > 0 && param->flag != '0')

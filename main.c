@@ -12,6 +12,7 @@ int main() {
     char *str, *str2;
     str = calloc(1024 + 1, sizeof(char));
     str2 = calloc(1024 + 1, sizeof(char));
+
     double y = 85.95654;
     int x = 123456789;
     int a;
@@ -566,11 +567,18 @@ int main() {
     printf("=================================================================\n");
     //char format161[] = "%.0g";
     //double hex161 = 0.123000;
-    a = s21_sprintf(str, "%hx", -111111);
+    char format161[] = "%g";
+    double hex161 = 123246.9;
+    //long double k = 333.33213;
+    //"NUMBER 09: % d TEST", 12345
+    //"% d", int val = 0;
+    //format161, 222, 33333333333, -166513.1232
+    a = s21_sprintf(str, format161, hex161);
     printf("STR1_161: %d * %s\n", a, str);
-    a = sprintf(str2, "%hx", -111111);
+    a = sprintf(str2, format161, hex161);
     printf("STR2_161: %d * %s\n", a, str2);
     clear(&str, &str2);
+    
 
 /*
     long double val191 = 0.4134121;
