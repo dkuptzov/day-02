@@ -3731,10 +3731,10 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_200);
     tcase_add_test(tc_core, test_201);
     tcase_add_test(tc_core, test_202);
-/*
-    //tcase_add_test(tc_core, test_203);
-    //tcase_add_test(tc_core, test_204);
-    //tcase_add_test(tc_core, test_205);
+    tcase_add_test(tc_core, test_203);
+    tcase_add_test(tc_core, test_204);   
+    tcase_add_test(tc_core, test_205);
+/* 
     //tcase_add_test(tc_core, test_206);
     tcase_add_test(tc_core, test_207);
     //tcase_add_test(tc_core, test_208);

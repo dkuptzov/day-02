@@ -18,18 +18,6 @@ int main() {
     int a;
     char *s = "KARAMBA";
     char c = 'D';
-/*
-    FILE *file = NULL;
-    file = fopen("ascii.txt", "r");
-    while (c != EOF) {
-        c = fgetc(file);
-        a = s21_sprintf(str, "%c", c);
-        a = sprintf(str2, "%c", c);
-        //printf("%s\n", str2);
-        if (strcmp(str, str2)) printf("TUT\n");
-        clear(&str, &str2);
-    }
-*/
 
     a = s21_sprintf(str, "NUMBER %c TEST", c);
     a = sprintf(str2, "NUMBER %c TEST", c);
@@ -565,22 +553,147 @@ int main() {
     clear(&str, &str2);
 
     printf("=================================================================\n");
-    //char format161[] = "%.0g";
-    //double hex161 = 0.123000;
-    char format161[] = "%g";
-    double hex161 = 123246.9;
-    //long double k = 333.33213;
-    //"NUMBER 09: % d TEST", 12345
-    //"% d", int val = 0;
-    //format161, 222, 33333333333, -166513.1232
+    printf("=================================================================\n");
+    printf("=================================================================\n");
+
+    char format161[] = "%Lf";
+    long double hex161 = 3515315.153151;
     a = s21_sprintf(str, format161, hex161);
     printf("STR1_161: %d * %s\n", a, str);
     a = sprintf(str2, format161, hex161);
     printf("STR2_161: %d * %s\n", a, str2);
     clear(&str, &str2);
-    
+
+    printf("=================================================================\n");
+    char format162[] = "%Lf";
+    long double hex162 = 72537572375.1431341;
+    a = s21_sprintf(str, format162, hex162);
+    printf("STR1_162: %d * %s\n", a, str);
+    a = sprintf(str2, format162, hex162);
+    printf("STR2_162: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+
+    char format163[] = "%Lf";
+    long double hex163 = 95919539159.53151351131;
+    a = s21_sprintf(str, format163, hex163);
+    printf("STR1_163: %d * %s\n", a, str);
+    a = sprintf(str2, format163, hex163);
+    printf("STR2_163: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+
+    char format164[] = "%g";
+    double hex164 = 0.0000005;
+    a = s21_sprintf(str, format164, hex164);
+    printf("STR1_164: %d * %s\n", a, str);
+    a = sprintf(str2, format164, hex164);
+    printf("STR2_164: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+
+    char format165[] = "%.15Lf";
+    long double hex165 = 15.35;
+    a = s21_sprintf(str, format165, hex165);
+    printf("STR1_165: %d * %s\n", a, str);
+    a = sprintf(str2, format165, hex165);
+    printf("STR2_165: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+
+    char format166[] = "%.14Lf";
+    long double hex166 = -15.35581134;
+    a = s21_sprintf(str, format166, hex166);
+    printf("STR1_166: %d * %s\n", a, str);
+    a = sprintf(str2, format166, hex166);
+    printf("STR2_166: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+
+    char format167[] = "%Lf";
+    long double hex167 = 3515315.153151;
+    a = s21_sprintf(str, format167, hex167);
+    printf("STR1_167: %d * %s\n", a, str);
+    a = sprintf(str2, format167, hex167);
+    printf("STR2_167: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+
+    //char format168[] = "%g";
+    //double hex168 = 0.00000000001;
+    //char cc = 'a';
+    //1 0 7
+    //1 1 7
+    //1 2 7
+    //7 2 7
+    //7 7 7
+
+    a = s21_sprintf(str, "NUMBER 10: %09d TEST", 12345);
+    printf("STR1_168: %d * %s\n", a, str);
+    a = sprintf(str2, "NUMBER 10: %09d TEST", 12345);
+    printf("STR2_168: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    printf("=================================================================\n");
+    printf("%%c\n");
+    printf("=================================================================\n");
+/*
+    FILE *file = NULL;
+    file = fopen("ascii.txt", "r");
+    while (c != EOF) {
+        c = fgetc(file);
+        char *str900, *str901;
+        str900 = calloc(1024 + 1, sizeof(char));
+        str901 = calloc(1024 + 1, sizeof(char));
+        int z1 = s21_sprintf(str900, "%c", c);
+        int z2 = sprintf(str901, "%c", c);
+        if (strcmp(str900, str901) || z1 != z2) {
+            printf("STR: %s * %c\n", str900, c);
+            printf("STR: %s\n", str901);
+            printf("Z: %d *** %d\n", z1, z2);
+            int bbb;
+            scanf("%d", &bbb);
+        }
+        else printf("%c", c);
+        clear(&str900, &str901);
+    }
+*/
+    printf("=================================================================\n");
 
 /*
+    double hex900 = 0.000004;
+    while (hex900 < 1) {
+        char *str900, *str901;
+        str900 = calloc(1024 + 1, sizeof(char));
+        str901 = calloc(1024 + 1, sizeof(char));
+        int z1 = s21_sprintf(str900, "%g", hex900);
+        int z2 = sprintf(str901, "%g", hex900);
+        if (strcmp(str900, str901) || z1 != z2) {
+            printf("STR: %s * %.20f\n", str900, hex900);
+            printf("STR: %s\n", str901);
+            printf("Z: %d *** %d\n", z1, z2);
+            int bbb;
+            scanf("%d", &bbb);
+        }
+        else printf("%f\n", hex900);
+        hex900 += 0.00000000001;
+        clear(&str900, &str901);
+    }
+*/
+    //95919539159.531509
+    /*
+    long double hexxx = 15.35;
+    hexxx -= (long long int)hexxx;
+    printf("HEX0: %Lf\n", hexxx);
+    int count = 0;
+    while (count++ < 10) {
+        hexxx *= 10;
+        if (round(hexxx) >= 10) printf("!!!!!!!!!!!!!!!!!!1");
+        printf("HEX1: %Lf\n", hexxx);
+        hexxx -= (long long int)hexxx;
+        printf("HEX2: %Lf\n", hexxx);
+    }
+
+
     long double val191 = 0.4134121;
     //long double val191 = 0.1535;
     int time = 0;
