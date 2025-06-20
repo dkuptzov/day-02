@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <wchar.h>
 
 #include "s21_sprintf.h"
 
@@ -622,20 +623,78 @@ int main() {
     //char format168[] = "%g";
     //double hex168 = 0.00000000001;
     //char cc = 'a';
-    //1 0 7
-    //1 1 7
-    //1 2 7
-    //7 2 7
-    //7 7 7
+    //1, 10 //not 0
+    //. 1. .1 1.1 1.2 2.1 6.1 6.6 6.10 10. 10.1 10.9 10.10 10.20
 
-    a = s21_sprintf(str, "NUMBER 10: %09d TEST", 12345);
+    a = s21_sprintf(str, "Work with string: %1s***%10s***%.s***%1.s***%.1s***%1.1s***%1.2s***%2.1s***%6.1s***%6.6s***%6.10s***%10.s***%10.1s***%10.9s***%10.10s***%10.20s ...", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!");
     printf("STR1_168: %d * %s\n", a, str);
-    a = sprintf(str2, "NUMBER 10: %09d TEST", 12345);
+    a = sprintf(str2, "Work with string: %1s***%10s***%.s***%1.s***%.1s***%1.1s***%1.2s***%2.1s***%6.1s***%6.6s***%6.10s***%10.s***%10.1s***%10.9s***%10.10s***%10.20s ...", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!");
     printf("STR2_168: %d * %s\n", a, str2);
+    clear(&str, &str2);
+
+    a = s21_sprintf(str, "Work with string: %-1s***%-10s***%-.s***%-1.s***%-.1s***%-1.1s***%-1.2s***%-2.1s***%-6.1s***%-6.6s***%-6.10s***%-10.s***%-10.1s***%-10.9s***%-10.10s***%-10.20s ...", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!");
+    printf("STR1_169: %d * %s\n", a, str);
+    a = sprintf(str2, "Work with string: %-1s***%-10s***%-.s***%-1.s***%-.1s***%-1.1s***%-1.2s***%-2.1s***%-6.1s***%-6.6s***%-6.10s***%-10.s***%-10.1s***%-10.9s***%-10.10s***%-10.20s ...", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", 
+        "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!");
+    printf("STR2_169: %d * %s\n", a, str2);
+    clear(&str, &str2);
+    //-+ #0.
+    char *format200 = "%50.20Lf";
+    long double k = 0.35581134;
+    a = s21_sprintf(str, format200, k);
+    printf("STR1_200: %d * %s\n", a, str);
+    a = sprintf(str2, format200, k);
+    printf("STR2_200: %d * %s\n", a, str2);
     clear(&str, &str2);
     printf("=================================================================\n");
     printf("%%c\n");
     printf("=================================================================\n");
+    
+    //сделать точность до 20, а выводить только нужное количество
+    long double kkk = 0.35581134;
+    int count100 = 0, max = 20, xxx = 0;
+    char *digit;
+    digit = calloc(1024 + 1, sizeof(char));
+    while (count100 < max) {
+        //printf("ATOI_TUT2\n");
+        int test = 0;
+        while (test++ < max - count100) {
+            kkk *= 10;
+        }
+        printf("Y1: %Lf\n", kkk);
+        //kkk = round(kkk);
+        //printf("Y2: %Lf\n", kkk);
+        kkk /= pow(10, max - count100 - 1);
+        printf("Y3: %Lf\n", kkk);
+        digit[xxx++] = '0' + ((int)kkk % 10);
+        kkk -= (long long int)kkk;
+        printf("Y4: %Lf\n", kkk);
+        /*
+        //printf("ATOI_Y1: %Lf\n", y);
+        y = round(y);
+        //printf("ATOI_Y2: %Lf\n", y);
+        y /= pow(10, max - count - 1);
+        //printf("ATOI_Y3: %Lf\n", y);
+        if (count == max - 1) z = round(y);
+        else z = (long long int)y;
+        //printf("ATOI_Z: %lld\n", z);
+        str[x++] = '0' + (z % 10);
+        //printf("STR: %s\n", str);
+        y -= (long long int)y;
+        //printf("ATOI_Y4: %Lf\n", y);
+        */
+        count100++;
+    }
+    digit[xxx] = '\0';
+    printf("STR_END: %s\n", digit);
+
 /*
     FILE *file = NULL;
     file = fopen("ascii.txt", "r");
@@ -660,22 +719,22 @@ int main() {
     printf("=================================================================\n");
 
 /*
-    double hex900 = 0.000004;
-    while (hex900 < 1) {
+    long long int hex900 = 922337203685477580;
+    while (hex900 < 9223372036854775807) {
         char *str900, *str901;
         str900 = calloc(1024 + 1, sizeof(char));
         str901 = calloc(1024 + 1, sizeof(char));
-        int z1 = s21_sprintf(str900, "%g", hex900);
-        int z2 = sprintf(str901, "%g", hex900);
+        int z1 = s21_sprintf(str900, "%-lld", hex900);
+        int z2 = sprintf(str901, "%-lld", hex900);
         if (strcmp(str900, str901) || z1 != z2) {
-            printf("STR: %s * %.20f\n", str900, hex900);
+            printf("STR: %s * %lld\n", str900, hex900);
             printf("STR: %s\n", str901);
             printf("Z: %d *** %d\n", z1, z2);
             int bbb;
             scanf("%d", &bbb);
         }
-        else printf("%f\n", hex900);
-        hex900 += 0.00000000001;
+        else printf("%lld\n", hex900);
+        hex900 += 15745635623456;
         clear(&str900, &str901);
     }
 */

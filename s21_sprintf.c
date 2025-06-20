@@ -7,7 +7,7 @@
 // %[флаги][ширина][.точность][длина]спецификатор
 
 int s21_sprintf(char *str, const char *str_format, ...) {
-    param param = {0, 0, 0, 0, 0, 0, 'x', 'x', 'x', 'x', 'x','\0', 'x', 0, 0.0, 0, -1};
+    param param = {0, 0, 0, 0, 0, 0, 'x', 'x', 'x', 'x', 'x','\0', 'x', 0, 0.0, 0, -1, 0, 0, 0, 0, 0, 0};
     va_list args;
     va_start(args, str_format);
     char *str_d, *str_sing, *str_ready;
@@ -22,6 +22,13 @@ int s21_sprintf(char *str, const char *str_format, ...) {
             param.accuracy = -1;
             param.length = 'x';
             param.star = -1;
+            param.sign = 'x';
+            param.flag_hash = 0;
+            param.flag_minus = 0;
+            param.flag_plus = 0;
+            param.flag_space = 0;
+            param.flag_zero = 0;
+            param.flag_dot = 0;
             i++;
             //test
             //printf("param->width0: %d %d %c %c\n", param.width, param.accuracy, param.flag, param.flag2);
@@ -33,61 +40,69 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                 //printf("PARAM: %c\n", str_format[i]);
                 //printf("param.flag0: %c\n", param.flag);
                 //printf("param->width1: %d %d %c %c\n", param.width, param.accuracy, param.flag, param.flag2);
-                if (str_format[i] == '+') param.sign = '+';
-                //
-                else if (str_format[i] == '*') param.star = va_arg(args, int);
-                else if (param.flag == '-' && param.flag2 == '#' && str_format[i] == '.') {
-                    //printf("TUT1\n");
-                    param.flag = '.';
-                    param.accuracy -= param.width;
-                    param.width = 0;
-                }
-                else if ((param.flag == '#' || param.flag == '-') && str_format[i] == '.') {
+                if (str_format[i] == '+') param.flag_plus = 1;
+                else if (str_format[i] == ' ') param.flag_space = 1;
+                else if (str_format[i] == '-') param.flag_minus = 1;
+                else if (str_format[i] == '#') param.flag_hash = 1;
+                //else if (str_format[i] == '*') param.star = va_arg(args, int);
+                else if (str_format[i] == '.') param.flag_dot = 1;
+                else if (str_format[i] == '0') param.flag_zero = 1;
+                /*
+                else if ((param.flag_hash == 1 || param.flag_minus == 1) && str_format[i] == '.') {
                     //printf("TUT11\n");
                     param.flag2 = '.';
                 }
-                else if ((param.flag == '#' && str_format[i] == '*') ||
-                        ((param.flag == '-' && str_format[i] == '*'))) {
-                            //printf("TUT12\n");
+                */
+                //
+                else if (str_format[i] == '*' && param.flag_dot == 1) param.accuracy = va_arg(args, int);
+                else if (str_format[i] == '*') param.width = va_arg(args, int);
+                //
+                /*
+                else if ((param.flag_hash == 1 && str_format[i] == '*') ||
+                        ((param.flag_minus == 1 && str_format[i] == '*'))) {
+                            printf("TUT1\n");
                             param.width = (va_arg(args, int) - param.width > 0) ? va_arg(args, int) - param.width : param.width;
-                        }
-                else if (param.flag == ' ' && param.width == 0 && str_format[i] == '.') {
-                //else if (param.flag == ' ' && str_format[i] == '.') {
+                }
+                */
+                /*
+                else if (param.flag_space == 1 && param.width == 0 && str_format[i] == '.') {
+                //else if (param.flag_space == 1 && str_format[i] == '.') {
                     //printf("TUT13\n");
                     param.flag2 = '.';
                 }
-                //
-                else if (param.flag == '#' && str_format[i] == '-') {
-                    //printf("TUT2\n");
-                    param.flag = '-';
-                    param.flag2 = '#';
-                }
+                */
                 //else if (str_format[i] == '*' && param.flag == '.') param.accuracy = va_arg(args, int) - param.accuracy;
-                else if (str_format[i] == '*' && param.flag == '.') {
-                    //printf("TUT3\n");
+                /*
+                else if (str_format[i] == '*' && param.flag_dot == 1) {
+                    printf("TUT2\n");
                     param.accuracy = param.width;
                     param.width = 0;
                 }
+                */
+                /*
                 else if (str_format[i] == '.' && param.flag == '*') {
                     //printf("TUT4\n");
                     param.flag = '.';
                     //param.accuracy = param.width;
                 }
+                */
+                /*
                 else if (str_format[i] == '*') {
                     //param.width = va_arg(args, int) - param.width;
-                    //printf("TUT5\n");
+                    printf("TUT3\n");
                     int z = va_arg(args, int);
                     param.width = (z - param.width > 0) ? z - param.width : param.width;
                     param.flag = '*';
                 }
-                else if (str_format[i] == '-' || str_format[i] == ' ' || 
-                    str_format[i] == '.' || str_format[i] == '#' || 
-                    (str_format[i] == '0' && param.flag == 'x')) {
-                        //printf("TUT51\n");
+                */
+                /*
+                else if (str_format[i] == '0' && param.flag == 'x') {
+                        //printf("TUT4\n");
                         param.flag = str_format[i];
-                    }
-                else if (str_format[i] >= '0' && str_format[i] <= '9' && (param.flag == '.' || param.flag2 == '.')) {
-                    //printf("TUT6\n");
+                }
+                */
+                else if (str_format[i] >= '0' && str_format[i] <= '9' && param.flag_dot == 1) {
+                    //printf("TUT5\n");
                     while (str_format[i] >= '0' && str_format[i] <= '9')
                         str_sing[param.count_sign++] = str_format[i++];
                     str_sing[param.count_sign] = '\0';
@@ -95,7 +110,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     next_i = 1;
                 }
                 else if (str_format[i] >= '0' && str_format[i] <= '9') {
-                    //printf("TUT7\n");
+                    //printf("TUT6\n");
                     while (str_format[i] >= '0' && str_format[i] <= '9')
                         str_sing[param.count_sign++] = str_format[i++];
                     str_sing[param.count_sign] = '\0';
@@ -114,14 +129,18 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     param.count_sign = 0;
                 }
                 if (next_i == 0) i++;
+                /*
                 if (param.star != -1 && (param.flag == '0' || param.flag == 'x')) {
+                    printf("TUT7\n");
                     param.width = (param.star - param.width > 0) ? param.star - param.width : param.width;
                     param.star = -1;
                 }
-                else if (param.star != -1 && (param.flag == '.' || param.flag2 == '.')) {
+                else if (param.star != -1 && param.flag_dot == 1) {
+                    printf("TUT8\n");
                     param.accuracy = param.star;
                     param.star = -1;
                 }
+                */
                 //printf("param.flag: %c\n", param.flag);
                 //printf("param.width: %d\n", param.width);
             }
@@ -245,7 +264,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     //    str_ready[param.count++] = (param.type == 'x') ? 'x' : 'X';
                     //    param.width -= 2;
                     //}
-                    printf("main: %lld\n", param.va_int);
+                    printf("main: %d %d\n", param.width, param.accuracy);
                     if (param.va_int >= 0) case_x_plus(&str_ready, &param);
                     else case_x_minus(&str_ready, &param);
                     break;
@@ -256,7 +275,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         param.va_int = (long long int)temp_o;
                     }
                     //printf("param.va_int: %lld\n", param.va_int);
-                    if (param.flag == '#') str_ready[param.count++] = '0';
+                    if (param.flag_hash == 1) str_ready[param.count++] = '0';
                     if (param.va_int >= 0) case_o_plus(&str_ready, &param);
                     else case_o_minus(&str_ready, &param);
                     break;
@@ -279,7 +298,6 @@ int s21_sprintf(char *str, const char *str_format, ...) {
     if (param.error == 0)
         for (int i = 0; str_ready[i] != '\0'; i++)
             str[i] = str_ready[i];
-    //printf("STR_END: %s\n", str);
     return param.count;
 }
 
@@ -301,6 +319,10 @@ void s21_alignment(char ***str, param *param) {
     printf("s21_alignment: %d ** %d ** %c ** %c ** %lld\n", param->width, param->accuracy, param->flag, param->flag2, param->va_int);
     printf("param->type: %c\n", param->type);
     //if ((param->type == 'x' || param->type == 'X') && param->va_int < 0) {
+    //TEST
+    if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
+    //
+
     if (param->width == -1) param->width = 0;
     if (param->accuracy == -1) param->accuracy = 0;
     if (param->type == 'x' || param->type == 'X') {
@@ -311,28 +333,36 @@ void s21_alignment(char ***str, param *param) {
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }
-    else if (param->type == 'u' || param->type == 'd' || param->type == 'f') {
-        if (param->width > 0 && param->flag != '0')
+    else if (param->type == 'u' || param->type == 'd' || param->type == 'f' || param->type == 'E' || param->type == 'e') {
+        if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
-        else if (param->width > 0)
+        if (param->width > 0 && param->flag_zero == 1)
             for (int i = 0; i < param->width - param->accuracy; i++)
                 (**str)[param->count++] = '0';
+        if (param->accuracy > 0)
+            for (int i = 0; i < param->accuracy; i++)
+                (**str)[param->count++] = '0';
+    }
+    else if (param->type == 'c' || param->type == 's' || param->type == 'o' || param->type == 'p') {
+        if (param->width > 0)
+            for (int i = 0; i < param->width; i++)
+                (**str)[param->count++] = ' ';
         else if (param->accuracy > 0)
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }
     else {
-        if (param->width > 0 && param->flag == '0')
+        if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = '0';
-        else if (param->width > 0 && param->type == 'c')
+        else if (param->width > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
         else if (param->width > 0)
             for (int i = 0; i < param->width - param->accuracy; i++)
                 (**str)[param->count++] = ' ';
-        if (param->accuracy > 0 && param->type != 'c')
+        if (param->accuracy > 0)
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }

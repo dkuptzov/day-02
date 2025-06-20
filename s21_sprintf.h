@@ -19,6 +19,12 @@ typedef struct param {
   long double va_f;
   int its_float;
   int star;
+  short flag_minus;
+  short flag_plus;
+  short flag_space;
+  short flag_hash;
+  short flag_zero;
+  short flag_dot;
 } param;
 
 //char *s21_atoi(param *param);
