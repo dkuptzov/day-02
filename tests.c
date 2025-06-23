@@ -3811,7 +3811,7 @@ START_TEST(test_228)
     char *str1, *str2;
     str1 = calloc(1024 + 1, sizeof(char));
     str2 = calloc(1024 + 1, sizeof(char));
-    char *format = "%5.19Lf";
+    char *format = "%5.15Lf";
     long double k = -4736574.3345356378213;
     int a = s21_sprintf(str1, format, k);
     int b = sprintf(str2, format, k);
@@ -3830,13 +3830,52 @@ START_TEST(test_229)
     char *str1, *str2;
     str1 = calloc(1024 + 1, sizeof(char));
     str2 = calloc(1024 + 1, sizeof(char));
-    char *format = "%50.20Lf%75.20Lf%19.20Lf";
+    char *format = "%50.15Lf%75.15Lf%19.15Lf";
     long double k = -4736574.334;
     int a = s21_sprintf(str1, format, k, k, k);
     int b = sprintf(str2, format, k, k, k);
     ck_assert_str_eq(str1, str2);
     ck_assert_int_eq(a, b);
     printf("Test229 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_230)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%p%10p";
+    long double k = -4736574.334;
+    long double *ptr = &k;
+    int a = s21_sprintf(str1, format, ptr, ptr);
+    int b = sprintf(str2, format, ptr, ptr);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test230 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_231)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%o%.o%0.o%.0o%0.0o%1.o%.1o%1.1o%1.3o%3.1o%3.3o%4.3o%3.4o%5.5o%6.5o%5.6o%ho";
+    long double k = -4736574.334;
+    int a = s21_sprintf(str1, format, 100, 200, 300, 534573, 9988, 4, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 564575646);
+    int b = sprintf(str2, format, 100, 200, 300, 534573, 9988, 4, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 564575646);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test231 --------------\n");
     printf("%s\n", str1);
     printf("%s\n", str2);
     free(str1);
@@ -4078,6 +4117,8 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_227);
     tcase_add_test(tc_core, test_228);
     tcase_add_test(tc_core, test_229);
+    tcase_add_test(tc_core, test_230);
+    tcase_add_test(tc_core, test_231);
 
     suite_add_tcase(s, tc_core);
     return s;

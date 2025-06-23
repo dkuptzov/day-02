@@ -5,6 +5,6 @@
 
 long long int s21_to_binary(param *param);
 long long int type(long long int x, param *param);
-long long int s21_to_binary2(long long int x, int bit);
+long long int s21_to_binary2(long long int x, int bit, param *param);
 
 #endif

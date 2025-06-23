@@ -67,14 +67,15 @@ long long int s21_to_binary(param *param) {
 
 long long int type(long long int x, param *param) {
     if (param->type == 'd' || param->type == 'o' || param->type == 'u' || param->type == 'x' || param->type == 'X') {
-        if (param->length == 'h' && (x > SHRT_MAX || x < SHRT_MIN)) x = s21_to_binary2(x, 16);
-        else if (param->length == 'x' && (x > INT_MAX || x < INT_MIN)) x = s21_to_binary2(x, 32);
-        else if (param->type == 'l' && (x > LONG_MAX || x < LONG_MIN)) x = s21_to_binary2(x, 64);
+        if (param->length == 'h' && param->type == 'o' && (x > SHRT_MAX || x < SHRT_MIN)) x = s21_to_binary2(x, 14, param);
+        else if (param->length == 'h' && (x > SHRT_MAX || x < SHRT_MIN)) x = s21_to_binary2(x, 16, param);
+        else if (param->length == 'x' && (x > INT_MAX || x < INT_MIN)) x = s21_to_binary2(x, 32, param);
+        else if (param->type == 'l' && (x > LONG_MAX || x < LONG_MIN)) x = s21_to_binary2(x, 64, param);
     }
     return x;
 }
 
-long long int s21_to_binary2(long long int x, int bit) {
+long long int s21_to_binary2(long long int x, int bit, param *param) {
     char *binary_str_revers, *binary_str;
     binary_str_revers = calloc(1024 + 1, sizeof(char));
     binary_str = calloc(1024 + 1, sizeof(char));
@@ -86,6 +87,7 @@ long long int s21_to_binary2(long long int x, int bit) {
     }
     for (int i = count_revers - 1; i >= 0; i--)
         binary_str[count++] = binary_str_revers[i];
+    while (binary_str[count - bit] == '1' && param->type == 'o') bit++;
     if (binary_str[count - bit] == '1') {
         for (int i = count - 1; i >= count - bit; i--) {
             if (binary_str[i] == '1' && i == count - 1)
@@ -108,6 +110,7 @@ long long int s21_to_binary2(long long int x, int bit) {
             multi++;
         }
     }
+    printf("RES: %s %s\n", binary_str, binary_str_revers);
     free(binary_str);
     free(binary_str_revers);
     return result;

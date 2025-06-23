@@ -56,12 +56,13 @@ char *s21_atof(param *param) {
 }
 
 char *s21_atoi_new(param *param) {
-    int max = 6, count = 0;
+    int max = 6, max2 = 20, count = 0;
     //printf("PARAM: %Lf\n", param->va_f);
     //if (param->va_f == 0 && param->flag == '.') max = 0;
     char *digit, *str;
     digit = calloc(1024 + 1, sizeof(char));
     str = calloc(1024 + 1, sizeof(char));
+    //str2 = calloc(1024 + 1, sizeof(char));
     long long int x = 0;
     long double y = 0.0;
     if (param->length == 'h' || param->type == 'd' || param->type == 'u') {
@@ -112,16 +113,68 @@ char *s21_atoi_new(param *param) {
         //int a;
         //scanf("%d", &a);
         y = (param->va_f < 0) ? param->va_f * -1.0 : param->va_f;
+        printf("PARAM: %Lf\n", param->va_f);
         //if ((param->type == 'e' || param->type == 'E') && y >= 10) y /= 10;
         //printf("ATOI_Y: %Lf\n", y);
         //printf("PARAM: %Lf %d %d\n", param->va_f, count, max);
         //printf("ATOI_Y1: %Lf\n", y);
-        //y -= (long long int)y;
+        y -= (long long int)y;
         //printf("ATOI_Y2: %Lf\n", y);
         //printf("STR10: %s\n", str);
         //max -= x;
         //printf("MAX_FINAL: %d\n", max);
-        long long int z = 0;
+        //long long int z = 0;
+        //
+        if (param->flag_dot == 1 && param->accuracy >= 0) max2 = param->accuracy;
+        else max2 = max;
+        while (count < max) {
+        //printf("ATOI_TUT2\n");
+            int test = 0;
+            y -= (long long int)y;
+            while (test++ < max2 - count) {
+                y *= 10;
+            }
+            printf("Y0: %Lf\n", y);
+            if (param->type == 'e' || param->type == 'E') {
+                if (param->flag_dot != 1 || count == max - 1) y = round(y);
+                else if (param->flag_dot != 1) y = round(y);
+            }
+            else if (param->type == 'f' || param->type == 'g' || param->type == 'G') y = round(y);
+            //if (param->accuracy <= 0 || count - 1 == param->accuracy) y = round(y);
+            printf("Y1: %Lf\n", y);
+            //y = round(y);
+            //kkk = round(kkk);
+            //printf("Y2: %Lf\n", kkk);
+            y /= pow(10, max2 - count - 1);
+            printf("Y2: %Lf\n", y);
+            //if (count == max - 1) y = round(y);
+            //printf("Y3: %Lf\n", y);
+            //if (count - 1 == param->accuracy) y = round(y);
+            str[x++] = '0' + ((int)y % 10);
+            printf("STR: %s\n", str);
+            y -= (long long int)y;
+            printf("Y3: %Lf\n", y);
+            /*
+            //printf("ATOI_Y1: %Lf\n", y);
+            y = round(y);
+            //printf("ATOI_Y2: %Lf\n", y);
+            y /= pow(10, max - count - 1);
+            //printf("ATOI_Y3: %Lf\n", y);
+            if (count == max - 1) z = round(y);
+            else z = (long long int)y;
+            //printf("ATOI_Z: %lld\n", z);
+            str[x++] = '0' + (z % 10);
+            //printf("STR: %s\n", str);
+            y -= (long long int)y;
+            //printf("ATOI_Y4: %Lf\n", y);
+            */
+            count++;
+        }
+        //printf("STR2: %s\n", str2);
+        //for (int i = 0; i < max; i++) str[x++] = str2[i];
+
+        //
+        /*
         if (param->its_float == 0 && param->length == 'L') {
             //
             y -= (long long int)y;
@@ -144,11 +197,9 @@ char *s21_atoi_new(param *param) {
                     //printf("HEX2: %Lf\n", y);
                     //printf("STR0: %s\n", str);
                 }
-                /*
-                if (count == max - 1) z = round(y);
-                else z = (long long int)y;
-                str[x++] = '0' + (z % 10);
-                */
+                //if (count == max - 1) z = round(y);
+                //else z = (long long int)y;
+                //str[x++] = '0' + (z % 10);
                 y -= (long long int)y;
                 count++;
             }
@@ -174,6 +225,8 @@ char *s21_atoi_new(param *param) {
                 count++;
             }
         }
+        */
+
         //while (count++ < max) str[x++] = '0';
         //printf("STR10: %s\n", str);
         if (str[--x] == '.') str[x] = '\0';

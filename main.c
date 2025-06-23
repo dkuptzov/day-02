@@ -646,19 +646,23 @@ int main() {
     printf("STR2_169: %d * %s\n", a, str2);
     clear(&str, &str2);
     //-+ #0.
-    char *format200 = "%50.20Lf";
-    long double k = 0.35581134;
-    a = s21_sprintf(str, format200, k);
+    //char *format200 = "%p%20p%.p%1.1p%1.5p%15.15p";
+    char *format200 = "%ho";
+    //long double k200 = 1;
+    //long double *ptr200 = &k200;
+    //long double k201 = 1;
+    //. 0. .0 0.0 1. .1 1.1 1.3 3.1 3.3 4.3 3.4 5.5 6.5 5.6
+    a = s21_sprintf(str, format200, 564575646457457546);
     printf("STR1_200: %d * %s\n", a, str);
-    a = sprintf(str2, format200, k);
+    a = sprintf(str2, format200, 564575646457457546);
     printf("STR2_200: %d * %s\n", a, str2);
     clear(&str, &str2);
     printf("=================================================================\n");
     printf("%%c\n");
     printf("=================================================================\n");
-    
+/*   
     //сделать точность до 20, а выводить только нужное количество
-    long double kkk = 0.35581134;
+    long double kkk = 0.35;
     int count100 = 0, max = 20, xxx = 0;
     char *digit;
     digit = calloc(1024 + 1, sizeof(char));
@@ -670,13 +674,12 @@ int main() {
         }
         printf("Y1: %Lf\n", kkk);
         //kkk = round(kkk);
-        //printf("Y2: %Lf\n", kkk);
+        printf("Y2: %Lf\n", kkk);
         kkk /= pow(10, max - count100 - 1);
         printf("Y3: %Lf\n", kkk);
         digit[xxx++] = '0' + ((int)kkk % 10);
         kkk -= (long long int)kkk;
         printf("Y4: %Lf\n", kkk);
-        /*
         //printf("ATOI_Y1: %Lf\n", y);
         y = round(y);
         //printf("ATOI_Y2: %Lf\n", y);
@@ -689,12 +692,11 @@ int main() {
         //printf("STR: %s\n", str);
         y -= (long long int)y;
         //printf("ATOI_Y4: %Lf\n", y);
-        */
-        count100++;
-    }
-    digit[xxx] = '\0';
-    printf("STR_END: %s\n", digit);
-
+        //count100++;
+    //}
+    //digit[xxx] = '\0';
+    //printf("STR_END: %s\n", digit);
+*/
 /*
     FILE *file = NULL;
     file = fopen("ascii.txt", "r");

@@ -318,7 +318,7 @@ void case_g(char **str, param *param) {
     }
     if (param->va_f == 0.0 && (param->type == 'g' || param->type == 'G')) (*str)[param->count++] = '0';
     else if (param->va_f >= pow(10, 6) || ((param->type == 'e' || param->type == 'E') && param->va_f >= 1)) {
-        //printf("1 %c %c\n", param->flag, param->flag2);
+        printf("1 %c %c\n", param->flag, param->flag2);
         while (param->va_f >= 10.0) {
             param->va_f = param->va_f / 10;
             count++;
@@ -343,7 +343,6 @@ void case_g(char **str, param *param) {
         while ((param->va_f + 0.000001) < 1 && param->va_f != 0) {
             param->va_f *= 10;
             count++;
-            //printf("PARAM_VA_F: %Lf\n", param->va_f);
         }
         //printf("PARAM_VA_F: %Lf\n", param->va_f);
         str_int = s21_atoi_new(param);
@@ -849,16 +848,46 @@ void case_x_minus(char **str, param *param) {
 
 void case_o_plus(char **str, param *param) {
     //printf("param->va_int: %lld\n", param->va_int);
-    int count = 0;
+    int count = 0;//, count_h = 0;
     char *str_o;
     str_o = calloc(1024 + 1, sizeof(char));
     if (param->va_int == 0) str_o[count++] = '0';
     while (param->va_int > 0) {
         str_o[count++] = '0' + param->va_int % 8;
         param->va_int /= 8;
+        //if (param->length == 'h' && count_h++ == 6) 
     }
     //
-    param->width = (param->width > s21_strlen(str_o)) ? param->width - s21_strlen(str_o) : -1;
+    int strlen = s21_strlen(str_o);
+    printf("PARAM: %d %d %d\n", param->width, param->accuracy, strlen);
+    if (param->width > 0 && param->accuracy > 0) {
+        if (param->width >= param->accuracy && param->accuracy >= strlen) {
+            param->width -= param->accuracy;
+            param->accuracy -= strlen;
+        }
+        else if (param->width >= param->accuracy && param->width >= strlen) {
+            param->width -= strlen;
+            param->accuracy = 0;
+        }
+        else if (param->accuracy >= param->width && param->accuracy >= strlen) {
+            param->accuracy -= strlen;
+            param->width = 0;
+        }
+        else if (param->accuracy < strlen && param->width < strlen) {
+            param->accuracy = 0;
+            param->width = 0;
+        }
+    }
+    else if (param->width > 0) {
+        if ((param->flag_hash == 1) && param->va_int != 0) param->width -= 2;
+        param->width -= strlen;
+    }
+    else if (param->accuracy > 0) {
+        param->accuracy -= strlen;
+    }
+    //
+    //param->width = (param->width > s21_strlen(str_o)) ? param->width - s21_strlen(str_o) : -1;
+    printf("PARAM: %d %d\n", param->width, param->accuracy);
     if (param->flag_minus == 1 && param->flag_dot == 0) {
         for (int i = count - 1; i >= 0; i--) (*str)[param->count++] = str_o[i];
         s21_alignment(&str, param);
@@ -868,7 +897,7 @@ void case_o_plus(char **str, param *param) {
         for (int i = count - 1; i >= 0; i--) (*str)[param->count++] = str_o[i];
     }
     else if (param->accuracy > 0) {
-        param->accuracy = (param->accuracy > s21_strlen(str_o)) ? param->accuracy - s21_strlen(str_o) : 0;
+        //param->accuracy = (param->accuracy > s21_strlen(str_o)) ? param->accuracy - s21_strlen(str_o) : 0;
         s21_alignment(&str, param);
         for (int i = count - 1; i >= 0; i--) (*str)[param->count++] = str_o[i];
     }
@@ -937,7 +966,10 @@ char x8(char **str) {
 void case_p(char **str, char *str_d, param *param) {
     //printf("STR: %s\n", str_d);
     param->length = 0;
-    char hex_addr[sizeof(void *) * 2 + 1], hex_addr_2[sizeof(void *) * 2 + 1];
+    char *hex_addr, *hex_addr_2;
+    hex_addr = calloc(1024 + 1, sizeof(char));
+    hex_addr_2 = calloc(1024 + 1, sizeof(char));
+    //char hex_addr[sizeof(void *) * 2 + 1], hex_addr_2[sizeof(void *) * 2 + 1];
     uintptr_t address = (uintptr_t) str_d;
     int first = 1, count = 2;
     if (str_d != NULL) {
@@ -946,6 +978,10 @@ void case_p(char **str, char *str_d, param *param) {
         hex_addr[sizeof(void *) * 2 + 1] = '\0';
         hex_addr_2[0] = '0';
         hex_addr_2[1] = 'x';
+        while (param->accuracy - 12 > 0) {
+            hex_addr_2[count++] = '0';
+            param->accuracy--;
+        }
         for (int i = sizeof(void*) * 2 - 1; i >= 0; --i) {
             if (first == 0) hex_addr_2[count++] = hex_addr[i];
             else if (hex_addr[i] != 'x' && hex_addr[i] != '0') {
@@ -967,5 +1003,10 @@ void case_p(char **str, char *str_d, param *param) {
     param->width = (param->width > s21_strlen(hex_addr_2)) ? param->width - s21_strlen(hex_addr_2) : -1;
     if (param->width > 0) s21_alignment(&str, param);
     //
-    for (int i = 0; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
+    for (int i = 0; i < count; i++) {
+        printf("I %d %d %c\n", i, param->count, hex_addr_2[i]);
+        (*str)[param->count++] = hex_addr_2[i];
+    }
+    free(hex_addr);
+    free(hex_addr_2);
 }

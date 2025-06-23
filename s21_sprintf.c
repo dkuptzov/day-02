@@ -224,7 +224,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         long double temp = va_arg(args, double);
                         param.va_f = (long double)temp;
                     }
-                    if (param.va_f == (long long int)param.va_f) param.its_float = 1;
+                    //if (param.va_f == (long long int)param.va_f) param.its_float = 1;
                     //printf("PARAM: %Lf\n", param.va_f);
                     //if (param.va_f == 0) str_ready[param.count++] = '0';
                     //else case_g(&str_ready, &param);
@@ -271,10 +271,11 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                 case 'o':
                     if (param.length == 'l') param.va_int = va_arg(args, long int);
                     else { 
-                        int temp_o = va_arg(args, int);
-                        param.va_int = (long long int)temp_o;
+                        //int temp_o = va_arg(args, int);
+                        //param.va_int = (long long int)temp_o;
+                        param.va_int = type(va_arg(args, long long int), &param);
                     }
-                    //printf("param.va_int: %lld\n", param.va_int);
+                    printf("param.va_int: %lld\n", param.va_int);
                     if (param.flag_hash == 1) str_ready[param.count++] = '0';
                     if (param.va_int >= 0) case_o_plus(&str_ready, &param);
                     else case_o_minus(&str_ready, &param);
@@ -344,7 +345,7 @@ void s21_alignment(char ***str, param *param) {
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }
-    else if (param->type == 'c' || param->type == 's' || param->type == 'o' || param->type == 'p') {
+    else if (param->type == 'c' || param->type == 's' || param->type == 'p') {
         if (param->width > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
@@ -352,7 +353,16 @@ void s21_alignment(char ***str, param *param) {
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }
+    else if (param->type == 'o') {
+        if (param->width > 0)
+            for (int i = 0; i < param->width; i++)
+                (**str)[param->count++] = ' ';
+        if (param->accuracy > 0)
+            for (int i = 0; i < param->accuracy; i++)
+                (**str)[param->count++] = '0';
+    }
     else {
+        printf("TUT\n");
         if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = '0';
@@ -366,6 +376,7 @@ void s21_alignment(char ***str, param *param) {
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }
+    printf("COUNT1: %d\n", param->count);
 }
 
 int s21_str_to_number(char *str_sing) {
