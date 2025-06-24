@@ -13,10 +13,10 @@ int main() {
     char *str, *str2;
     str = calloc(1024 + 1, sizeof(char));
     str2 = calloc(1024 + 1, sizeof(char));
+    int a;
 
     double y = 85.95654;
     int x = 123456789;
-    int a;
     char *s = "KARAMBA";
     char c = 'D';
 
@@ -647,14 +647,17 @@ int main() {
     clear(&str, &str2);
     //-+ #0.
     //char *format200 = "%p%20p%.p%1.1p%1.5p%15.15p";
-    char *format200 = "%ho";
+    //char *format200 = "***%0.ho***%.0ho***%0.0ho***%1.ho***%.1ho***%1.1ho***%1.3ho***%3.1ho**%3.3ho***%4.3ho***%3.4ho***%5.5ho***%6.5ho***%5.6ho***%10.11ho***%11.10ho***%11.11ho***%15.11ho***%15.9ho***%15.14ho***%15.19ho";
+    //***%ho***%.ho
+    //-100, -200
     //long double k200 = 1;
     //long double *ptr200 = &k200;
     //long double k201 = 1;
     //. 0. .0 0.0 1. .1 1.1 1.3 3.1 3.3 4.3 3.4 5.5 6.5 5.6
-    a = s21_sprintf(str, format200, 564575646457457546);
+    char *format200 = "%.17LE";
+    a = s21_sprintf(str, format200, 4134121);
     printf("STR1_200: %d * %s\n", a, str);
-    a = sprintf(str2, format200, 564575646457457546);
+    a = sprintf(str2, format200, 4134121);
     printf("STR2_200: %d * %s\n", a, str2);
     clear(&str, &str2);
     printf("=================================================================\n");
