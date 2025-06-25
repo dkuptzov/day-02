@@ -1,3 +1,5 @@
+#include <float.h>
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,16 +17,16 @@ int main() {
     str2 = calloc(1024 + 1, sizeof(char));
     int a;
 
-    double y = 85.95654;
-    int x = 123456789;
-    char *s = "KARAMBA";
+    //double y = 85.95654;
+    //int x = 123456789;
+    //char *s = "KARAMBA";
     char c = 'D';
 
     a = s21_sprintf(str, "NUMBER %c TEST", c);
     a = sprintf(str2, "NUMBER %c TEST", c);
     printf("ORG_CCC: %s\n\n", str2);
     clear(&str, &str2);
-
+/*
     a = s21_sprintf(str, "NUMBER %s TEST", s);
     a = sprintf(str2, "NUMBER %s TEST", s);
     printf("ORG_SSS: %s\n\n", str2);
@@ -619,13 +621,13 @@ int main() {
     printf("STR2_167: %d * %s\n", a, str2);
     clear(&str, &str2);
     printf("=================================================================\n");
-
+*/
     //char format168[] = "%g";
     //double hex168 = 0.00000000001;
     //char cc = 'a';
     //1, 10 //not 0
     //. 1. .1 1.1 1.2 2.1 6.1 6.6 6.10 10. 10.1 10.9 10.10 10.20
-
+/*
     a = s21_sprintf(str, "Work with string: %1s***%10s***%.s***%1.s***%.1s***%1.1s***%1.2s***%2.1s***%6.1s***%6.6s***%6.10s***%10.s***%10.1s***%10.9s***%10.10s***%10.20s ...", 
         "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", 
         "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!");
@@ -645,6 +647,7 @@ int main() {
         "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!", "Hello!");
     printf("STR2_169: %d * %s\n", a, str2);
     clear(&str, &str2);
+*/
     //-+ #0.
     //char *format200 = "%p%20p%.p%1.1p%1.5p%15.15p";
     //char *format200 = "***%0.ho***%.0ho***%0.0ho***%1.ho***%.1ho***%1.1ho***%1.3ho***%3.1ho**%3.3ho***%4.3ho***%3.4ho***%5.5ho***%6.5ho***%5.6ho***%10.11ho***%11.10ho***%11.11ho***%15.11ho***%15.9ho***%15.14ho***%15.19ho";
@@ -654,10 +657,11 @@ int main() {
     //long double *ptr200 = &k200;
     //long double k201 = 1;
     //. 0. .0 0.0 1. .1 1.1 1.3 3.1 3.3 4.3 3.4 5.5 6.5 5.6
-    char *format200 = "%.17LE";
-    a = s21_sprintf(str, format200, 4134121);
+    //char *format200 = "%.17LE";
+    printf("%f %f\n", FLT_MAX);
+    a = s21_sprintf(str, "%f", FLT_MAX);
     printf("STR1_200: %d * %s\n", a, str);
-    a = sprintf(str2, format200, 4134121);
+    a = sprintf(str2, "%f", FLT_MAX);
     printf("STR2_200: %d * %s\n", a, str2);
     clear(&str, &str2);
     printf("=================================================================\n");

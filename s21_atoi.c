@@ -12,18 +12,23 @@ char *s21_atoi_new(param *param) {
     str = calloc(1024 + 1, sizeof(char));
     long long int x = 0;
     long double y = 0.0;
+    printf("PAR1: %Lf\n", param->va_f);
     if (param->length == 'h' || param->type == 'd' || param->type == 'u') {
-        x = s21_atoi_int(str, digit, param->va_int, param);
+        if (param->type == 'u') x = s21_atoi_int_u(str, digit, (unsigned long long)param->va_int, param);
+        else x = s21_atoi_int(str, digit, param->va_int, param);
         str[x] = '\0';
     }
     else if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') {
+        printf("PAR2: %Lf\n", param->va_f);
         if (param->flag_dot == 1) {
+            printf("PAR21: %Lf\n", param->va_f);
             if (param->accuracy <= 0 && param->width <= 0 && param->type == 'g') max = 1;
             else if (param->accuracy > 0) max = param->accuracy;
             else max = param->width;
         }
         else if (param->g != 0) max -= param->g;
         if (max == 1 && param->va_f < 1 && param->type == 'g') {
+            printf("PAR22: %Lf\n", param->va_f);
             long double z = param->va_f;
             z *= 10;
             while (z < 1) {
@@ -31,7 +36,9 @@ char *s21_atoi_new(param *param) {
                 max++;
             }
         }
+        printf("PAR3: %Lf\n", param->va_f);
         x = s21_atoi_int(str, digit, param->va_f, param);
+        printf("PAR4: %Lf\n", param->va_f);
         y = (param->va_f < 0) ? param->va_f * -1.0 : param->va_f;
         y -= (long long int)y;
         if (param->flag_dot == 1 && param->accuracy >= 0) max2 = param->accuracy;
@@ -60,11 +67,12 @@ char *s21_atoi_new(param *param) {
 int s21_atoi_int(char *str, char *digit, long double x, param *param) {
     int count = 0;
     long long int x_first = x;
-    if (param->accuracy <= 0 && param->length == 'L' && param->flag_dot == 1) x = round(x);
     long long int z;
+    if (param->accuracy <= 0 && param->length == 'L' && param->flag_dot == 1) x = round(x);
     if (x > 0) z = (long long int)(x + 0.000001);
     else z = (long long int)(x - 0.000001);
     if (z < 0) z *= -1;
+    printf("Z: %Lf * %lld\n", x, z);
     while (z > 0) {
         digit[count++] = '0' + (z % 10);
         z /= 10;
@@ -76,5 +84,44 @@ int s21_atoi_int(char *str, char *digit, long double x, param *param) {
     }
     if (z == 0) str[z++] = '0';
     if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') str[z++] = '.';
+    return z;
+}
+/*
+int s21_atoi_float(char *str, char *digit, long double x, param *param) {
+    int count = 0;
+    long double x_first = x;
+    long double z;
+    if (param->accuracy <= 0 && param->length == 'L' && param->flag_dot == 1) x = round(x);
+    if (x > 0) z = x + 0.000001;
+    else z = x - 0.000001;
+    if (z < 0) z *= -1;
+    printf("Z: %Lf * %lld\n", x, z);
+    while (z > 0) {
+        digit[count++] = '0' + (z % 10);
+        z /= 10;
+    }
+    digit[count] = '\0';
+    if (x_first < 0) str[z++] = '-';
+    for (int i = count - 1; i >= 0; i--) {
+        str[z++] = digit[i];    
+    }
+    if (z == 0) str[z++] = '0';
+    if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') str[z++] = '.';
+    return z;
+}
+*/
+int s21_atoi_int_u(char *str, char *digit, unsigned long long x, param *param) {
+    int count = 0;
+    unsigned long long z = x;
+    if (param->accuracy <= 0 && param->length == 'L' && param->flag_dot == 1) x = round(x);
+    while (z > 0) {
+        digit[count++] = '0' + (z % 10);
+        z /= 10;
+    }
+    digit[count] = '\0';
+    for (int i = count - 1; i >= 0; i--) {
+        str[z++] = digit[i];    
+    }
+    if (z == 0) str[z++] = '0';
     return z;
 }

@@ -1,4 +1,6 @@
 #include <check.h>
+#include <float.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -3996,12 +3998,264 @@ START_TEST(test_238)
     char *str1, *str2;
     str1 = calloc(1024 + 1, sizeof(char));
     str2 = calloc(1024 + 1, sizeof(char));
-    char *format = "%05d%ld%E";
-    int a = s21_sprintf(str1, format, 123, (long)123456789L, 123.456);
-    int b = sprintf(str2, format, 123, (long)123456789L, 123.456);
+    char *format = "%05d%ld%E%#g% d%*.*f";
+    int a = s21_sprintf(str1, format, 123, (long)123456789L, 123.456, 123.456, 123, 10, 2, 123.456);
+    int b = sprintf(str2, format, 123, (long)123456789L, 123.456, 123.456, 123, 10, 2, 123.456);
     ck_assert_str_eq(str1, str2);
     ck_assert_int_eq(a, b);
     printf("Test238 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_239)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%+d%#X%Ld%f%.2f%E";
+    int a = s21_sprintf(str1, format, -123, 12345, (long long)123456789012345LL, 123.456, 123.456, 123.456);
+    int b = sprintf(str2, format, -123, 12345, (long long)123456789012345LL, 123.456, 123.456, 123.456);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test239 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_240)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%10d%d%-10d%05d%+d% d%-10s%#X%o%X%s%-10s";
+    int a = s21_sprintf(str1, format, 123, -123, 123, 123, 123, -123, "test", 12345, 12345, 12345, "", "abc");
+    int b = sprintf(str2, format, 123, -123, 123, 123, 123, -123, "test", 12345, 12345, 12345, "", "abc");
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test240 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_241)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%hu%hu%hu%.3s%.2f%s%*.*f";
+    int a = s21_sprintf(str1, format, 65536, 100000, -65539, "abcdef", 123.456, "TEST", 10, 2, 123.456);
+    int b = sprintf(str2, format, 65536, 100000, -65539, "abcdef", 123.456, "TEST", 10, 2, 123.456);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test241 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_242)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%+d%10.2f%lu%p%.2f";
+    int a = s21_sprintf(str1, format, 123, 123.456, (unsigned long)4294967295UL, (void*)0xDEADBEEF, 123.456);
+    int b = sprintf(str2, format, 123, 123.456, (unsigned long)4294967295UL, (void*)0xDEADBEEF, 123.456);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test242 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_243)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%s%s%c";
+    int a = s21_sprintf(str1, format, "", "\0", "\0");
+    int b = sprintf(str2, format, "", "\0", "\0");
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test243 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_244)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%+5d%05d%-.2f%10d%#X%lo%hd";
+    int a = s21_sprintf(str1, format, 123, 123, -123.456, 123456789, 12345, (long)123456789L, (char)123);
+    int b = sprintf(str2, format, 123, 123, -123.456, 123456789, 12345, (long)123456789L, (char)123);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test244 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_245)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%.5s%p%-10s%.3s%.10s";
+    int a = s21_sprintf(str1, format, "abcdefghij", (void*)0xDEADBEEF, "Test", "example", "ThisIsALongText");
+    int b = sprintf(str2, format, "abcdefghij", (void*)0xDEADBEEF, "Test", "example", "ThisIsALongText");
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test245 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_246)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%lo%+d%hd%#lo%+.2f%.3f%-10d";
+    int a = s21_sprintf(str1, format, 64, 123456789, (char)123, (long)123456789L, 123.456, 123.456789, 123);
+    int b = sprintf(str2, format, 64, 123456789, (char)123, (long)123456789L, 123.456, 123.456789, 123);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test246 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_247)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%#010X%.6f%.3f%10d%-10s%hd%.0f% d%hx";
+    int a = s21_sprintf(str1, format, 12345, 123.456789, 123.456, 123, "Example", -32768, 123.456, 123, (char)123);
+    int b = sprintf(str2, format, 12345, 123.456789, 123.456, 123, "Example", -32768, 123.456, 123, (char)123);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test247 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_248)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%.5s%#08X%.2E%lu%d";
+    int a = s21_sprintf(str1, format, "ThisIsALongText", 12345, 123.456, 18446744073709551615UL, 2147483647);
+    int b = sprintf(str2, format, "ThisIsALongText", 12345, 123.456, 18446744073709551615UL, 2147483647);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test248 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_249)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%10.2f%-10d%#X%#X";
+    int a = s21_sprintf(str1, format, 123.456, 123, 12345, -54321);
+    int b = sprintf(str2, format, 123.456, 123, 12345, -54321);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test249 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_250)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%d%d%hd%hd%ld%ld";
+    int a = s21_sprintf(str1, format, INT_MIN, INT_MAX, SHRT_MIN, SHRT_MAX, LONG_MIN, LONG_MAX);
+    int b = sprintf(str2, format, INT_MIN, INT_MAX, SHRT_MIN, SHRT_MAX, LONG_MIN, LONG_MAX);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test250 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_251)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%u %hu %lu %#o %#x %#X";
+    int a = s21_sprintf(str1, format, UINT_MAX, USHRT_MAX, ULONG_MAX, 0123, 0xABCDEF, 0xABCDEF);
+    int b = sprintf(str2, format, UINT_MAX, USHRT_MAX, ULONG_MAX, 0123, 0xABCDEF, 0xABCDEF);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test251 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_252)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%c %c %f";
+    int a = s21_sprintf(str1, format, 'A', L'A', FLT_MIN);
+    int b = sprintf(str2, format, 'A', L'A', FLT_MIN);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test252 --------------\n");
     printf("%s\n", str1);
     printf("%s\n", str2);
     free(str1);
@@ -4252,6 +4506,20 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_236);
     tcase_add_test(tc_core, test_237);
     tcase_add_test(tc_core, test_238);
+    tcase_add_test(tc_core, test_239);
+    tcase_add_test(tc_core, test_240);
+    tcase_add_test(tc_core, test_241);
+    tcase_add_test(tc_core, test_242);
+    tcase_add_test(tc_core, test_243);
+    tcase_add_test(tc_core, test_244);
+    tcase_add_test(tc_core, test_245);
+    tcase_add_test(tc_core, test_246);
+    tcase_add_test(tc_core, test_247);
+    tcase_add_test(tc_core, test_248);
+    tcase_add_test(tc_core, test_249);
+    tcase_add_test(tc_core, test_250);
+    tcase_add_test(tc_core, test_251);
+    tcase_add_test(tc_core, test_252);
 
     suite_add_tcase(s, tc_core);
     return s;

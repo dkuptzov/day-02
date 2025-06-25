@@ -1,6 +1,7 @@
 #include "s21_case.h"
 #include "s21_sprintf.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -75,6 +76,8 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     break;
                 case 'd':
                     param.va_int = type(va_arg(args, long long int), &param);
+                    if (param.va_int == LLONG_MIN) printf("param.va_int0: %lld\n", param.va_int);
+                    printf("param.va_int1: %lld\n", param.va_int);
                     case_u(&str_ready, &param);
                     break;
                 case 'e':
@@ -99,6 +102,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         double temp = va_arg(args, double);
                         param.va_f = (long double)temp;
                     }
+                    printf("long double: %Lf\n", param.va_f);
                     case_f(&str_ready, &param);
                     break;
                 case 's':
@@ -153,6 +157,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
 
 //функция подсчета длины строки
 int s21_strlen(char *str_du) {
+    printf("STR: %s\n", str_du);
     int i = 0;
     for (; str_du[i] != '\0'; i++);
     return i;
@@ -164,9 +169,12 @@ void s21_alignment(char ***str, param *param) {
     if (param->width == -1) param->width = 0;
     if (param->accuracy == -1) param->accuracy = 0;
     if (param->type == 'x' || param->type == 'X') {
-        if (param->width > 0)
+        if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
+        else if (param->width > 0 && param->flag_zero == 1)
+            for (int i = 0; i < param->width; i++)
+                (**str)[param->count++] = '0';
         else if (param->accuracy > 0)
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';

@@ -1,5 +1,6 @@
 #include "s21_case.h"
 
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +21,13 @@ void case_c(char **str, param *param) {
 
 void case_u(char **str, param *param) {
     char *str_du = NULL;
-    str_du = s21_atoi_new(param);
+    if (param->length == 'l' && param->va_int == LLONG_MIN) {
+        (*str)[param->count++] = '-';
+        const char str_llmin[] = "9223372036854775808";
+        str_du = calloc(20, sizeof(char));
+        for (int i = 0; i < 19; i++) str_du[i] = str_llmin[i];
+    }
+    else str_du = s21_atoi_new(param);
     int strlen = s21_strlen(str_du);
     s21_width_accuracy(strlen, param);
     if (param->flag_space == 1 && param->type != 'u' && param->flag_plus == 0 && str_du[0] != '-') {
@@ -63,13 +70,15 @@ void case_u(char **str, param *param) {
         s21_alignment(&str, param);
     }*/
     else if (param->length == 'h') {
-        param->va_int = s21_to_binary(param);
+        while (param->va_int >= 65536) param->va_int -= 65536;
+        //param->va_int = s21_to_binary(param);
         str_du = s21_atoi_new(param);
     }
-    else if (param->length == 'l') {
-        param->va_int = s21_to_binary(param);
-        str_du = s21_atoi_new(param);
-    }
+    //else if (param->length == 'l' && param->va_int != LLONG_MIN) {
+        //while ((unsigned long long)param->va_int > 18446744073709551615UL) param->va_int -= 18446744073709551614UL;
+        //param->va_int = s21_to_binary(param);
+        //str_du = s21_atoi_new(param);
+    //}
     if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) (*str)[param->count++] = '+';
     if ((param->flag_minus == 0) && !(param->flag_dot == 1 && param->accuracy == 0 && param->va_int == 0))
         for (int j = (param->va_int < 0 && (param->flag_zero == 1 || param->accuracy > 0)) ? 1 : 0; str_du[j] != '\0'; j++)
@@ -221,6 +230,7 @@ void case_s(char **str, char *str_d, param *param) {
 }
 
 void case_x_plus(char **str, param *param) {
+    printf("param->width0: %d * %d\n", param->width, param->flag_zero);
     int count = 0;
     long long int x, temp_va = param->va_int;
     char *str_x;
@@ -259,13 +269,21 @@ void case_x_plus(char **str, param *param) {
     int strlen = s21_strlen(str_x);
     s21_width_accuracy(strlen, param);
     int dont_print = 0;
-    if (param->width > 0 && param->flag_minus == 0) {
+    if (param->width > 0 && param->flag_minus == 0 && param->flag_zero == 0) {
         s21_alignment(&str, param);
         if ((param->flag_hash == 1) && param->va_int != 0) {
             dont_print = 1;
             (*str)[param->count++] = '0';
             (*str)[param->count++] = (param->type == 'x') ? 'x' : 'X';
         }
+    }
+    else if (param->width > 0 && param->flag_zero == 1) {
+        if ((param->flag_hash == 1) && param->va_int != 0) {
+            dont_print = 1;
+            (*str)[param->count++] = '0';
+            (*str)[param->count++] = (param->type == 'x') ? 'x' : 'X';
+        }
+        s21_alignment(&str, param);
     }
     if (param->accuracy > 0) {
         param->width = 0;
