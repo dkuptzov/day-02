@@ -658,15 +658,64 @@ int main() {
     //long double k201 = 1;
     //. 0. .0 0.0 1. .1 1.1 1.3 3.1 3.3 4.3 3.4 5.5 6.5 5.6
     //char *format200 = "%.17LE";
-    printf("%f %f\n", FLT_MAX);
-    a = s21_sprintf(str, "%f", FLT_MAX);
+    printf("%f\n", FLT_MAX);
+    a = s21_sprintf(str, "%e", FLT_MAX);
     printf("STR1_200: %d * %s\n", a, str);
-    a = sprintf(str2, "%f", FLT_MAX);
+    a = sprintf(str2, "%e", FLT_MAX);
     printf("STR2_200: %d * %s\n", a, str2);
     clear(&str, &str2);
     printf("=================================================================\n");
     printf("%%c\n");
     printf("=================================================================\n");
+
+    long double www = FLT_MAX, www2, www3 = 0;
+    int count_w = 39, count_w2 = 39;
+    printf("coun: %f\n", (double)FLT_MAX);
+    www2 = www;
+    printf("www2: %Lf\n", www2);
+    while (count_w2-- > 1) www2 /= 10;
+    printf("ww: %.40Lf\n", www2);
+    while (count_w-- > 1) {
+        www2 *= 10;
+        printf("%d\n", (int)www2 % 10);
+        www2 -= (int)www2;
+        printf("%.15Lf\n", www2);
+    }
+    //340282346638528859811704183484516925440
+    //340282346638528880328
+
+    while (count_w-- > 20) {
+        www2 = www;
+        www2 /= pow(10, count_w);
+        www3 += ((long long int)www2 % 10) * pow(10, count_w);
+        printf("%Lf\n", www3);
+    }
+    www3 = round(www3);
+    printf("www3: %Lf\n", www3);
+    printf("coun: %f\n", FLT_MAX);
+
+    //int www3 = (int)www2;
+    //www2 = (long long int)www2 * pow(10, 10);
+    //www2 = (long long int)www2 * pow(10, 10);
+    //while (count_w++ < 18) {
+    //    www2 = www2 * pow(10, 1);
+    //    printf("%Lf\n", www2);
+    //}
+    //www2 = (long long int)www2 * pow(10, 10);
+    //www2 = (long long int)www2 * pow(10, 10);
+    //www2 = www2 * pow(10, 10);
+    //www2 = www2 * pow(10, 8);
+    //www -= www2;
+    //printf("%Lf\n", www);
+    //printf("%Lf\n", www2);
+/*
+    while (count_w++ < 40) {
+        www2 = www;
+        www2 /= pow(10, count_w);
+        printf("%d: %f\n", count_w, FLT_MAX);
+        printf("%d: %Lf\n", count_w, www2);
+    }
+*/   
 /*   
     //сделать точность до 20, а выводить только нужное количество
     long double kkk = 0.35;

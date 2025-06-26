@@ -6,6 +6,7 @@
 char *s21_atoi_new(param *param);
 //int s21_atoi_int(char *str, char *digit, long long int x, param *param);
 int s21_atoi_int(char *str, char *digit, long double x, param *param);
+int s21_atoi_float(char *str, char *digit, long double x, param *param);
 int s21_atoi_int_u(char *str, char *digit, unsigned long long x, param *param);
 
 #endif
