@@ -4263,6 +4263,42 @@ START_TEST(test_252)
 }
 END_TEST
 
+START_TEST(test_253)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%d%d%d%d%d";
+    int a = s21_sprintf(str1, format, -2147483647, 2147483647, 0, -123456789, 123456789);
+    int b = sprintf(str2, format, -2147483647, 2147483647, 0, -123456789, 123456789);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test253 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_254)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format = "%22.30d%22.30d%22.30d%22.30d%22.30d";
+    int a = s21_sprintf(str1, format, -2147483647, 2147483647, 0, -123456789, 123456789);
+    int b = sprintf(str2, format, -2147483647, 2147483647, 0, -123456789, 123456789);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test254 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
 Suite* make_suite(void)
 {
     Suite *s = suite_create("Sprintf tests");
@@ -4520,6 +4556,8 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_250);
     tcase_add_test(tc_core, test_251);
     tcase_add_test(tc_core, test_252);
+    tcase_add_test(tc_core, test_253);
+    tcase_add_test(tc_core, test_254);
 
     suite_add_tcase(s, tc_core);
     return s;

@@ -28,7 +28,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                 else if (str_format[i] == '-') param.flag_minus = 1;
                 else if (str_format[i] == '#') param.flag_hash = 1;
                 else if (str_format[i] == '.') param.flag_dot = 1;
-                else if (str_format[i] == '0') param.flag_zero = 1;
+                else if (str_format[i] == '0' && str_format[i - 1] != '.') param.flag_zero = 1;
                 else if (str_format[i] == '*' && param.flag_dot == 1) param.accuracy = va_arg(args, int);
                 else if (str_format[i] == '*') param.width = va_arg(args, int);
                 //точность
@@ -165,6 +165,7 @@ int s21_strlen(char *str_du) {
 
 //выравнивание строки относительно ширины и точности
 void s21_alignment(char ***str, param *param) {
+    printf("%d ** %d\n", param->width, param->flag_zero);
     if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
     if (param->width == -1) param->width = 0;
     if (param->accuracy == -1) param->accuracy = 0;
@@ -180,9 +181,11 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
     }
     else if (param->type == 'u' || param->type == 'd' || param->type == 'f' || param->type == 'E' || param->type == 'e') {
+        printf("%d ** %d\n", param->width, param->accuracy);
         if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
+        if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
         if (param->width > 0 && param->flag_zero == 1)
             for (int i = 0; i < param->width - param->accuracy; i++)
                 (**str)[param->count++] = '0';

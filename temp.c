@@ -14,16 +14,17 @@ double mantissa_to_decimal(uint64_t mantissa) {
     int pos = 0;
     char buffer[100];
     double result = 1.0; // Имплицитная единица мантиссы
-    //for(int i = 22; i >= 0; i--) {
-    //    result += (((mantissa >> i) & 1) * pow(2.0, -(23 - i)));
-    //    printf("%f\n", ((mantissa >> i) & 1) * pow(2.0, -(23 - i)));
-    //}
-    for(int i = 22; i >= 0; --i) {
-        uint32_t bit_value = (mantissa >> i) & 1;
-        buffer[pos++] = '0' + bit_value; // Запись соответствующей цифры
+    for(int i = 22; i >= 0; i--) {
+        result += (((mantissa >> i) & 1) * pow(2.0, -(23 - i)));
+        printf("%f\n", result);
+        //printf("%f\n", ((mantissa >> i) & 1) * pow(2.0, -(23 - i)));
     }
+    //for(int i = 22; i >= 0; --i) {
+    //    uint32_t bit_value = (mantissa >> i) & 1;
+    //    buffer[pos++] = '0' + bit_value; // Запись соответствующей цифры
+    //}
     buffer[pos] = '\0'; // Закрывающий символ конца строки
-    printf("STR: %s\n", buffer);
+    printf("STR: %f ** %s\n", result, buffer);
     return result;
 }
 

@@ -20,6 +20,7 @@ void case_c(char **str, param *param) {
 }
 
 void case_u(char **str, param *param) {
+    printf("param->width1: %d\n", param->width);
     char *str_du = NULL;
     if (param->length == 'l' && param->va_int == LLONG_MIN) {
         (*str)[param->count++] = '-';
@@ -29,13 +30,18 @@ void case_u(char **str, param *param) {
     }
     else str_du = s21_atoi_new(param);
     int strlen = s21_strlen(str_du);
-    s21_width_accuracy(strlen, param);
+    if (param->accuracy == 0 && param->va_int == 0) strlen = 0; //%20.0d - 0
+    printf("STR: %s * %d\n", str_du, strlen);
+    //s21_width_accuracy(strlen, param);
     if (param->flag_space == 1 && param->type != 'u' && param->flag_plus == 0 && str_du[0] != '-') {
         (*str)[param->count++] = ' ';
         param->width = (param->width > 0) ? param->width - 1: param->width;
     }
     else if (param->flag_plus == 1 && param->va_int >= 0 && (param->flag_minus == 1 || param->flag_space == 1 || param->flag_zero == 1)) param->width = (param->width > 0) ? param->width - 1: param->width;    
     if (param->flag_hash == 1 && param->flag_space == 0) param->width += 2;
+    printf("param->width2: %d * %d\n", param->width, param->accuracy);
+    s21_width_accuracy(strlen, param);
+    printf("param->width3: %d * %d\n", param->width, param->accuracy);
     if (param->flag_minus == 1) {
         if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) {
             (*str)[param->count++] = '+';
@@ -112,6 +118,7 @@ void case_g(char **str, param *param) {
     }
     if (param->va_f == 0.0 && (param->type == 'g' || param->type == 'G')) (*str)[param->count++] = '0';
     else if (param->va_f >= pow(10, 6) || ((param->type == 'e' || param->type == 'E') && param->va_f >= 1)) {
+        printf("1\n");
         while (param->va_f >= 10.0) {
             param->va_f = param->va_f / 10;
             count++;
@@ -149,6 +156,7 @@ void case_g(char **str, param *param) {
         (*str)[param->count++] = '0' + (count % 10);
     }
     else {
+        printf("3!!!\n");
         if (param->va_f < 1.0) param->g = 0;
         else if (param->va_f < 10.0) param->g = 1;
         else if (param->va_f < 100.0) param->g = 2;
@@ -157,6 +165,7 @@ void case_g(char **str, param *param) {
         else if (param->va_f < 100000.0) param->g = 5;
         else param->g = 6;
         str_int = s21_atoi_new(param);
+        printf("str_int: %s\n", str_int);
         for (int j = 0 ; str_int[j] != '\0'; j++ ) {
             (*str)[param->count++] = str_int[j];
         }
@@ -540,14 +549,20 @@ void case_p(char **str, char *str_d, param *param) {
 }
 
 void s21_width_accuracy(int strlen, param *param) {
+    printf("s21_width_accuracy: %d * %d %d\n", param->width, param->accuracy, strlen);
     if (param->width > 0 && param->accuracy >= 0) {
         if (param->width == strlen && param->accuracy == strlen) {
             param->width = 0;
             param->accuracy = 0;
+            if (param->va_int < 0) param->accuracy++;
         }
         else if (param->width > param->accuracy && param->accuracy > strlen) {
             param->width -= param->accuracy;
             param->accuracy -= strlen;
+            if (param->va_int < 0) {
+                param->width--;
+                param->accuracy++;
+            }
         }
         else if (param->width > param->accuracy && param->width >= strlen) {
             param->width -= strlen;
@@ -555,6 +570,7 @@ void s21_width_accuracy(int strlen, param *param) {
         }
         else if (param->accuracy >= param->width && param->accuracy >= strlen) {
             param->accuracy -= strlen;
+            if (param->va_int < 0) param->accuracy++;
             param->width = 0;
         }
         else if (param->accuracy < strlen && param->width < strlen) {
@@ -569,4 +585,5 @@ void s21_width_accuracy(int strlen, param *param) {
     else if (param->accuracy > 0) {
         param->accuracy = (param->va_int >= 0) ? param->accuracy - strlen: param->accuracy - strlen + 1;
     }
+    printf("s21_width_accuracy: %d * %d\n", param->width, param->accuracy);
 }

@@ -5210,7 +5210,7 @@ START_TEST(sprintf_minus_wide_char) {
     ck_assert_str_eq(str1, str2);
     ck_assert_int_eq(a, b);
 } END_TEST
-
+////////////*******************************
 START_TEST(sprintf_wide_string) {
     char str1[BUFF_SIZE];
     char str2[BUFF_SIZE];
