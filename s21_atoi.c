@@ -23,7 +23,8 @@ char *s21_atoi_new(param *param) {
         if (param->flag_dot == 1) {
             printf("PAR21: %Lf\n", param->va_f);
             if (param->accuracy <= 0 && param->width <= 0 && param->type == 'g') max = 1;
-            else if (param->accuracy > 0) max = param->accuracy;
+            else if (param->type == 'f' && param->va_f == 0.0 && param->flag_space == 0 && param->length == 'x') max = 1;
+            else if (param->accuracy >= 0) max = param->accuracy;
             else max = param->width;
         }
         else if (param->g != 0) max -= param->g;
@@ -76,7 +77,7 @@ int s21_atoi_int(char *str, char *digit, long double x, param *param) {
     long double temp = 0.0;
     char digit_reverse[100] = {0};
     while (x > 9000000000000000000.0) {
-        printf("LG: %d\n", lg);
+        //printf("LG: %d\n", lg);
         while (lg - max_lg > 0) {
             long double x_temp = x;
             x_temp /= pow(10, lg);
@@ -84,21 +85,22 @@ int s21_atoi_int(char *str, char *digit, long double x, param *param) {
             digit_reverse[count_reverse++] = '0' + (((long long int)x_temp) % 10);
             //printf("STR: %s\n", digit_reverse);
             temp = (long long int)x_temp;
-            printf("TEMp: %Lf\n", temp);
+            //printf("TEMp: %Lf\n", temp);
             lg--;
         }
         x -= (temp * pow(10, lg + 1));
         lg = log10l(x);
         max_lg = lg / 2;
-        printf("X: %Lf\n", x);
+        //printf("X: %Lf\n", x);
         param->va_f = x;
     }
     digit_reverse[count_reverse] = '\0';
-    printf("STR: %s\n", digit_reverse);
+    //printf("STR: %s\n", digit_reverse);
     long long int x_first = x;
     long long int z;
     if (param->accuracy <= 0 && param->length == 'L' && param->flag_dot == 1) x = round(x);
     if (x > 0) z = (long long int)(x + 0.000001);
+    else if (param->accuracy == 0) z = round(x);
     else z = (long long int)(x - 0.000001);
     if (z < 0) z *= -1;
     printf("Z: %Lf * %lld\n", x, z);
@@ -111,12 +113,15 @@ int s21_atoi_int(char *str, char *digit, long double x, param *param) {
         digit[count++] = digit_reverse[i];
     }
     digit[count] = '\0';
-    if (x_first < 0) str[z++] = '-';
+    printf("x_first: %lld * %s\n", x_first, digit);
+    //if (x_first < 0) str[z++] = '-';
+    if (x < 0) str[z++] = '-';
     for (int i = count - 1; i >= 0; i--) {
         str[z++] = digit[i];    
     }
-    if (z == 0) str[z++] = '0';
+    if (x_first == 0) str[z++] = '0';
     if (param->type == 'f' || param->type == 'g' || param->type == 'G' || param->type == 'e' || param->type == 'E') str[z++] = '.';
+    printf("str000: %s\n", str);
     return z;
 }
 /*

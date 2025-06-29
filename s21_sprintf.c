@@ -102,7 +102,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         double temp = va_arg(args, double);
                         param.va_f = (long double)temp;
                     }
-                    printf("long double: %Lf\n", param.va_f);
+                    //printf("long double: %Lf\n", param.va_f);
                     case_f(&str_ready, &param);
                     break;
                 case 's':
@@ -157,7 +157,6 @@ int s21_sprintf(char *str, const char *str_format, ...) {
 
 //функция подсчета длины строки
 int s21_strlen(char *str_du) {
-    printf("STR: %s\n", str_du);
     int i = 0;
     for (; str_du[i] != '\0'; i++);
     return i;
