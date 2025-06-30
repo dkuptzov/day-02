@@ -8,7 +8,7 @@
 // %[флаги][ширина][.точность][длина]спецификатор
 
 int s21_sprintf(char *str, const char *str_format, ...) {
-    param param = {0, 0, 0, 0, 0, 0, 'x', 'x', 'x', 0, 0.0, 0, 0, 0, 0, 0, 0, 0};
+    param param = {0, 0, 0, 0, 0, 0, 'x', 'x', 'x', 0, 0.01, 0, 0, 0, 0, 0, 0, 0};
     va_list args;
     va_start(args, str_format);
     char *str_d, *str_sing, *str_ready;
@@ -185,10 +185,11 @@ void s21_alignment(char ***str, param *param) {
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
         if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
+        //else if (param->va_f < 0 && param->width >= 0 && (param->type == 'e' || param->type == 'E')) (**str)[param->count++] = '-';
         if (param->width > 0 && param->flag_zero == 1)
             for (int i = 0; i < param->width - param->accuracy; i++)
                 (**str)[param->count++] = '0';
-        if (param->accuracy > 0)
+        if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e')
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
     }
@@ -278,7 +279,7 @@ void s21_update_param(param *param) {
     param->flag_zero = 0;
     param->flag_dot = 0;
     param->va_int = 0;
-    param->va_f = 0.0;
+    param->va_f = 0.01;
 }
 
 void s21_switch(char c, char *str_ready, va_list args, param *param) {

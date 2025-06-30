@@ -28,6 +28,7 @@ char *s21_atoi_new(param *param) {
             else max = param->width;
         }
         else if (param->g != 0) max -= param->g;
+        printf("max: %d\n", max);
         if (max == 1 && param->va_f < 1 && param->type == 'g') {
             printf("PAR22: %Lf\n", param->va_f);
             long double z = param->va_f;
@@ -59,7 +60,8 @@ char *s21_atoi_new(param *param) {
             printf("Y4: %Lf\n", y);
             y /= pow(10, max2 - count - 1);
             printf("Y5: %Lf\n", y);
-            str[x++] = '0' + ((int)y % 10);
+            if (param->length != 'L') str[x++] = '0' + ((int)(y + 0.000001) % 10);
+            else str[x++] = '0' + ((int)y % 10);
             printf("STR: %s\n", str);
             y -= (long long int)y;
             count++;

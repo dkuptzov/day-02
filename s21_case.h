@@ -17,6 +17,7 @@ void case_o_minus(char **str, param *param);
 void case_p(char **str, char *str_d, param *param);
 char x8(char **str);
 void s21_width_accuracy(int strlen, param *param);
+void s21_width_accuracy_f_0(int strlen, param *param);
 
 
 //void param_flag_minus(char ***str, char **str_du, param *param);
