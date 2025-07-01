@@ -89,6 +89,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         long double temp = va_arg(args, double);
                         param.va_f = (long double)temp;
                     }
+                    printf("param.va_f: %.17Lf\n", param.va_f);
                     case_g(&str_ready, &param);
                     break;
                 case 'u':
@@ -120,7 +121,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     if (param.va_int >= 0) case_x_plus(&str_ready, &param);
                     else case_x_minus(&str_ready, &param);
                     break;
-                case 'o':
+                case 'o': //работает только с int
                     if (param.length == 'l') param.va_int = va_arg(args, long int);
                     else if (param.length == 'h'){ 
                         long long int temp_o = va_arg(args, long long int);
@@ -128,9 +129,10 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                         param.va_int = type(param.va_int, &param);
                     }
                     else {
-                        long long int temp_o = va_arg(args, long long int);
+                        int temp_o = va_arg(args, int);
                         param.va_int = (long long int)temp_o;
                     }
+                    //printf("param.va_int: %lld\n", param.va_int);
                     if (param.flag_hash == 1) str_ready[param.count++] = '0';
                     if (param.va_int >= 0) case_o_plus(&str_ready, &param);
                     else case_o_minus(&str_ready, &param);
@@ -166,8 +168,8 @@ int s21_strlen(char *str_du) {
 void s21_alignment(char ***str, param *param) {
     printf("%d ** %d\n", param->width, param->flag_zero);
     if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
-    if (param->width == -1) param->width = 0;
-    if (param->accuracy == -1) param->accuracy = 0;
+    //if (param->width == -1) param->width = 0;
+    //if (param->accuracy == -1) param->accuracy = 0;
     if (param->type == 'x' || param->type == 'X') {
         if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
@@ -180,18 +182,26 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
     }
     else if (param->type == 'u' || param->type == 'd' || param->type == 'f' || param->type == 'E' || param->type == 'e') {
-        printf("%d ** %d\n", param->width, param->accuracy);
-        if (param->width > 0 && param->flag_zero == 0)
+        printf("TUT: %d ** %d\n", param->width, param->accuracy);
+        if (param->width > 0 && param->flag_zero == 0) {
+            if (param->va_f < 0) param->width--;
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
+            if (param->va_int < 0 && param->accuracy == -1 && param->flag_minus == 0) (**str)[param->count++] = '-';
+            else if (param->va_f < 0) (**str)[param->count++] = '-';
+        }
         if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
         //else if (param->va_f < 0 && param->width >= 0 && (param->type == 'e' || param->type == 'E')) (**str)[param->count++] = '-';
-        if (param->width > 0 && param->flag_zero == 1)
+        if (param->width > 0 && param->flag_zero == 1) {
+            if (param->accuracy < 0) param->accuracy = 0;
             for (int i = 0; i < param->width - param->accuracy; i++)
                 (**str)[param->count++] = '0';
-        if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e')
+        }
+        if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e') {
+            if (param->va_int < 0) param->accuracy--;
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
+        }
     }
     else if (param->type == 'c' || param->type == 's' || param->type == 'p') {
         if (param->width > 0)

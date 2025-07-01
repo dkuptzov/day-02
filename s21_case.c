@@ -33,7 +33,7 @@ void case_u(char **str, param *param) {
     if (param->accuracy == 0 && param->va_int == 0) strlen = 0; //%20.0d - 0
     printf("STR: %s * %d\n", str_du, strlen);
     //s21_width_accuracy(strlen, param);
-    if (param->flag_space == 1 && param->type != 'u' && param->flag_plus == 0 && str_du[0] != '-') {
+    if (param->flag_space == 1 && param->type != 'u' && param->flag_plus == 0 && str_du[0] != '-' && param->va_int >= 0) {
         (*str)[param->count++] = ' ';
         param->width = (param->width > 0) ? param->width - 1: param->width;
     }
@@ -41,7 +41,13 @@ void case_u(char **str, param *param) {
     if (param->flag_hash == 1 && param->flag_space == 0) param->width += 2;
     printf("param->width2: %d * %d\n", param->width, param->accuracy);
     s21_width_accuracy(strlen, param);
-    printf("param->width3: %d * %d\n", param->width, param->accuracy);
+    printf("param->width3: %d * %d * %lld\n", param->width, param->accuracy, param->va_int);
+    if ((param->width < strlen && param->accuracy < 0 && param->va_int < 0 && param->type == 'd') || (param->flag_minus == 1 && param->va_int < 0 && param->type == 'd')) {
+        if (param->va_int != LLONG_MIN) (*str)[param->count++] = '-';
+        param->width--;
+        param->flag_zero = 0;
+    }
+    else if (param->va_int < 0 && param->type == 'd') param->width--;
     if (param->flag_minus == 1) {
         if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) {
             (*str)[param->count++] = '+';
@@ -85,10 +91,14 @@ void case_u(char **str, param *param) {
         //param->va_int = s21_to_binary(param);
         //str_du = s21_atoi_new(param);
     //}
+    printf("STR!!!: %s \n", *str);
     if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) (*str)[param->count++] = '+';
     if ((param->flag_minus == 0) && !(param->flag_dot == 1 && param->accuracy == 0 && param->va_int == 0))
-        for (int j = (param->va_int < 0 && (param->flag_zero == 1 || param->accuracy > 0)) ? 1 : 0; str_du[j] != '\0'; j++)
+        //for (int j = (param->va_int < 0 && (param->flag_zero == 1 || param->accuracy > 0)) ? 1 : 0; str_du[j] != '\0'; j++)
+        //    (*str)[param->count++] = str_du[j];
+        for (int j = 0; str_du[j] != '\0'; j++)
             (*str)[param->count++] = str_du[j];
+    printf("STR!!!: %s \n", *str);
     free(str_du);
 }
 
@@ -99,7 +109,8 @@ void case_f(char **str, param *param) {
     if (param->va_f == 0.0 && param->type == 'f') s21_width_accuracy_f_0(strlen, param);
     else s21_width_accuracy(strlen, param);
     if (param->flag_plus == 1 && param->width > 0) param->width--;
-    if (param->flag_space == 1 && str_int[0] != '-') (*str)[param->count++] = ' ';
+    if (param->flag_space == 1 && param->va_f >= 0) (*str)[param->count++] = ' ';
+    if (param->va_f < 0 && param->width <= 0 && param->accuracy <= 0) (*str)[param->count++] = '-';
     if (param->width > 0)
         s21_alignment(&str, param);
     if (param->flag_plus == 1 && param->va_f >= 0)
@@ -128,11 +139,117 @@ void case_f(char **str, param *param) {
 void case_g(char **str, param *param) {
     char *str_int;
     int count = 0, less_zero = 0;
+    long double param_va_f = param->va_f;
+    if (param->flag_plus == 1 && param->va_f >= 0) (*str)[param->count++] = '+';
+    else if (param->flag_space == 1 && param->va_f >= 0) (*str)[param->count++] = ' ';
+    if (param_va_f < 0) {
+        param_va_f *= (-1.0);
+        less_zero = 1;
+    }
+    if (param->va_f == 0.0 && (param->type == 'g' || param->type == 'G')) {
+        printf("0!!!\n");
+        (*str)[param->count++] = '0';
+    }
+    //else if ((param->va_f >= pow(10, 6) || param_va_f >= pow(10, 6)) || ((param->type == 'e' || param->type == 'E') && param->va_f >= 1)) {
+    else if ((param->va_f >= pow(10, 6) || param_va_f >= pow(10, 6)) || ((param->type == 'e' || param->type == 'E') && (param->va_f >= 1 || param_va_f >= 1))) {
+        printf("1!!!\n");
+        if (less_zero == 1) param->va_f *= -1;
+        while (param->va_f >= 10.0) {
+            param->va_f = param->va_f / 10;
+            count++;
+        }
+        if (less_zero == 1) param->va_f *= -1;
+        printf("param->va_f: %.20Lf\n", param->va_f);
+        //if (less_zero == 1) {
+        //    param->width--;
+        //    param->va_f *= (-1.0);
+        //}
+        str_int = s21_atoi_new(param);
+        printf("str_int: %s\n", str_int);
+        param->width = (param->width > s21_strlen(str_int)) ? param->width - s21_strlen(str_int) - 4 : -1;
+        printf("param->width: %d\n", param->width);
+        if (param->flag_zero == 1 || param->width >= 0) s21_alignment(&str, param);
+        else if (param->va_f < 0) (*str)[param->count++] = '-';
+        //else if (!(param->flag_zero == 1 || param->width >= 0) && less_zero == 1) (*str)[param->count++] = '-';
+        //if (less_zero == 1) {
+        //    (*str)[param->count++] = '-';
+        //    param->va_f *= (-1.0);
+        //}
+        //if (param->va_f < 0 && param->width <= 0 && param->accuracy <= 0) (*str)[param->count++] = '-';
+        for (int j = 0 ; str_int[j] != '\0'; j++ ) (*str)[param->count++] = str_int[j];
+        (*str)[param->count++] = (param->type == 'E' || param->type == 'G') ? 'E' : 'e';
+        (*str)[param->count++] = '+';
+        if (count >= 10) (*str)[param->count++] = '0' + ((count / 10) % 10);
+        else (*str)[param->count++] = '0';
+        (*str)[param->count++] = '0' + (count % 10);
+    }
+    else if ((param->va_f < pow(10, -4) || param_va_f < pow(10, -4)) || ((param->type == 'e' || param->type == 'E') && (param->va_f < 1 || param->va_f < 1))) {
+        printf("2!!!\n");
+        if (less_zero == 1) param->va_f *= -1;
+        while ((param->va_f + 0.000001) < 1.0 && param->va_f != 0.0) {
+            param->va_f *= 10;
+            count++;
+        }
+        if (less_zero == 1) param->va_f *= -1;
+        if (param->accuracy == 0) param->va_f = round(param->va_f);
+        str_int = s21_atoi_new(param);
+        printf("str_int: %s\n", str_int);
+        param->width = (param->width > s21_strlen(str_int)) ? param->width - s21_strlen(str_int) - 4 : -1;
+        //if (less_zero == 1) {
+        //    (*str)[param->count++] = '-';
+        //    param->va_f *= (-1.0);
+        //}
+        printf("param->width: %d\n", param->width);
+        if (param->flag_zero == 1 || param->width >= 0) s21_alignment(&str, param);
+        else if (param->va_f < 0) (*str)[param->count++] = '-';
+        //else if (!(param->flag_zero == 1 || param->width >= 0) && less_zero == 1) (*str)[param->count++] = '-';
+        //if (less_zero == 1) param->va_f *= (-1.0);
+        printf("str1: %s\n", *str);
+        for (int i = s21_strlen(str_int) - 1; i >= 0 && (param->type == 'g' || param->type == 'G'); i--) {
+            if (str_int[i] == '0' || str_int[i] == '.' || str_int[i] == '\0') str_int[i] = '\0';
+            else break;
+        }
+        for (int j = 0; str_int[j] != '\0'; j++ ) {
+            (*str)[param->count++] = str_int[j];
+        }
+        (*str)[param->count++] = (param->type == 'E' || param->type == 'G') ? 'E' : 'e';
+        (*str)[param->count++] = (param->va_f == 0.0) ? '+' : '-';
+        if (count >= 100) (*str)[param->count++] = '0' + ((count / 100) % 10);
+        if (count >= 10) (*str)[param->count++] = '0' + ((count / 10) % 10);
+        else (*str)[param->count++] = '0';
+        (*str)[param->count++] = '0' + (count % 10);
+    }
+    else {
+        printf("3!!!\n");
+        if (param->va_f < 1.0) param->g = 0;
+        else if (param->va_f < 10.0) param->g = 1;
+        else if (param->va_f < 100.0) param->g = 2;
+        else if (param->va_f < 1000.0) param->g = 3;
+        else if (param->va_f < 10000.0) param->g = 4;
+        else if (param->va_f < 100000.0) param->g = 5;
+        else param->g = 6;
+        str_int = s21_atoi_new(param);
+        printf("str_int: %s\n", str_int);
+        for (int j = 0 ; str_int[j] != '\0'; j++ ) {
+            (*str)[param->count++] = str_int[j];
+        }
+        if (param->flag_hash == 0) {
+            param->count--;
+            while ((*str)[param->count] == '0') param->count--;
+            if ((*str)[param->count] == '.') (*str)[param->count] = '\0';
+            param->count++;
+        }
+        (*str)[param->count] = '\0';
+    }
+}
+/*
+void case_g(char **str, param *param) {
+    char *str_int;
+    int count = 0, less_zero = 0;
     //long double param_va_f = param->va_f;
     if (param->flag_plus == 1 && param->va_f >= 0) (*str)[param->count++] = '+';
     else if (param->flag_space == 1 && param->va_f >= 0) (*str)[param->count++] = ' ';
     if (param->va_f < 0) {
-        //if (param->width <= 0) (*str)[param->count++] = '-';
         param->va_f *= (-1.0);
         less_zero = 1;
     }
@@ -176,7 +293,7 @@ void case_g(char **str, param *param) {
         str_int = s21_atoi_new(param);
         param->width = (param->width > s21_strlen(str_int)) ? param->width - s21_strlen(str_int) - 4 : -1;
         if (less_zero == 1) {
-            param->width--;
+            (*str)[param->count++] = '-';
             param->va_f *= (-1.0);
         }
         printf("param->width: %d\n", param->width);
@@ -221,7 +338,7 @@ void case_g(char **str, param *param) {
         (*str)[param->count] = '\0';
     }
 }
-
+*/
 void case_s(char **str, char *str_d, param *param) {
     int strlen = s21_strlen(str_d);
     if (param->flag_dot == 1 && param->accuracy == -1) param->accuracy = 0;
@@ -466,6 +583,7 @@ void case_o_plus(char **str, param *param) {
         str_o[count++] = '0' + param->va_int % 8;
         param->va_int /= 8;
     }
+    printf("STR: %s\n", str_o);
     int strlen = s21_strlen(str_o);
     s21_width_accuracy(strlen, param);
     if (param->flag_minus == 1 && param->flag_dot == 0) {
@@ -485,6 +603,7 @@ void case_o_plus(char **str, param *param) {
 }
 
 void case_o_minus(char **str, param *param) {
+    printf("TUT!\n");
     int count = 0, count_revers = 0, plus = 1, three = 0;
     char *binary_str_revers, *binary_str, *str_x8, *str3;
     binary_str_revers = calloc(1024 + 1, sizeof(char));
@@ -497,6 +616,7 @@ void case_o_minus(char **str, param *param) {
         param->va_int /= 2;
     }
     binary_str[count++] = '1';
+    printf("STR0: %s\n", binary_str_revers);
     for (int i = 0; i < 32 - count_revers; i++) binary_str[count++] = '0';
     for (int i = count_revers - 1; i >= 0; i--) binary_str[count++] = binary_str_revers[i];
     for (int i = 0; binary_str[i] != '\0'; i++) {
