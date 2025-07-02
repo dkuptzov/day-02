@@ -70,6 +70,9 @@ int s21_sprintf(char *str, const char *str_format, ...) {
             va_arg(args, int);
             */
             switch (str_format[i]) {
+                case '%':
+                    str_ready[param.count++] = '%';
+                    break;
                 case 'c':
                     param.c = va_arg(args, int);
                     case_c(&str_ready, &param);
@@ -166,7 +169,7 @@ int s21_strlen(char *str_du) {
 
 //выравнивание строки относительно ширины и точности
 void s21_alignment(char ***str, param *param) {
-    printf("%d ** %d\n", param->width, param->flag_zero);
+    printf("s21_alignment:%d ** %d\n", param->width, param->flag_zero);
     if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
     //if (param->width == -1) param->width = 0;
     //if (param->accuracy == -1) param->accuracy = 0;
@@ -203,13 +206,27 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
         }
     }
-    else if (param->type == 'c' || param->type == 's' || param->type == 'p') {
-        if (param->width > 0)
+    else if (param->type == 's' || param->type == 'p') {
+        if (param->width > 0 && (param->flag_zero == 0 || param->flag_dot == 1))
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
+        else if (param->width > 0 && param->flag_zero == 1)
+            for (int i = 0; i < param->width; i++)
+                (**str)[param->count++] = '0';
         else if (param->accuracy > 0)
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
+    }
+    else if (param->type == 'c') {
+        if (param->width > 0)
+            for (int i = 0; i < param->width; i++)
+                (**str)[param->count++] = ' ';
+        //else if (param->width > 0 && param->flag_zero == 1)
+        //    for (int i = 0; i < param->width; i++)
+        //        (**str)[param->count++] = '0';
+        //else if (param->accuracy > 0)
+        //    for (int i = 0; i < param->accuracy; i++)
+        //        (**str)[param->count++] = '0';
     }
     else if (param->type == 'o') {
         if (param->width > 0)

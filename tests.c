@@ -4369,6 +4369,114 @@ START_TEST(test_258)
 }
 END_TEST
 
+START_TEST(test_259)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format89 = "%p%-p%-20p%+p%+20p%-+20p% p% 20p%#p%#20p%0p%020p%-+p%- p%-#p%-0p%+ p%+#p%+0p% #p% 0p%#0p";
+    int a = s21_sprintf(str1, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    int b = sprintf(str2, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test259 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_260)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format89 = "%0.0p%0.p%.0p%3.3p*%14.10p*%20.10p*%20.14p%20.19p*%0.14p*%5.20p%14.20p%20.20p*%20.0p";
+    int a = s21_sprintf(str1, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    int b = sprintf(str2, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test260 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_261)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format89 = "%+0.0p%+0.p%+.0p%+3.3p*%+14.10p*%+20.10p*%+20.14p%+20.19p*%+0.14p*%+5.20p%+14.20p%+20.20p*%+20.0p%-0.0p%-0.p%-.0p%-3.3p*%-14.10p*%-20.10p*%-20.14p%-20.19p*%-0.14p*%-5.20p%-14.20p%-20.20p*%-20.0p% 0.0p% 0.p% .0p% 3.3p*% 14.10p*% 20.10p*% 20.14p% 20.19p*% 0.14p*% 5.20p% 14.20p% 20.20p*% 20.0p%#0.0p%#0.p%#.0p%#3.3p*%#14.10p*%#20.10p*%#20.14p%#20.19p*%#0.14p*%#5.20p%#14.20p%#20.20p*%#20.0p";
+    int a = s21_sprintf(str1, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    int b = sprintf(str2, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test261 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_262)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format89 = "%00.0p%00.p%0.0p%03.3p*%014.10p*%020.10p*%020.14p%020.19p*%00.14p*%05.20p%014.20p%020.20p*%020.0p";
+    int a = s21_sprintf(str1, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    int b = sprintf(str2, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89, format89);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test262 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_263)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format89 = "%c*%-c*%+c*% c*%#c*%0c*%-+c*%- c*%-#c*%-0c*%+ c*%+#c*%+0c*% #c*% 0c*%#0c*%10c*%+10c*%010c*%0.0c*%0.1c*%1.0c*%1.1c*%5.0c%5.1c*%5.5c*%5.8c*%0.8c*%1.8c%-10.6c*%06.10c***%+- #05.8c";
+    int a = s21_sprintf(str1, format89, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', '[', '*', '\\', '\'', '\n', '\"', '\t', '\r', '\b', '\f', '\v', '\a', '\x41', '\101', '1', '0', '.', '6', '&', '$', 'Z');
+    int b = sprintf(str2, format89, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', '[', '*', '\\', '\'', '\n', '\"', '\t', '\r', '\b', '\f', '\v', '\a', '\x41', '\101', '1', '0', '.', '6', '&', '$', 'Z');
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test263 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
+START_TEST(test_264)
+{
+    char *str1, *str2;
+    str1 = calloc(1024 + 1, sizeof(char));
+    str2 = calloc(1024 + 1, sizeof(char));
+    char *format89 = "%d*1!*%-10d*2!*%-d*3!*%+d*4!*% d*5!*%#d*6!*%0d*7!*%010d*8!*%-+d*9!*%- d*10!*%-#d*11!*%-0d*12!*%+ d*13!*%+#d*14!*%+010d*15!*%+0d*16!*% #d*17!*% 0d*18!*% 010d*19!*%#0d*20!*%#05d*21!*%0.0d*22!*%0.1d*23!*%1.0d*24*%1.1d*25*%2.0d*26*%2.1d*27*%2.2d*28*%0.2d*29*%5.2d*30*%5.5d*31*%7.5d*32*%5.7d*33*%-7.5d*34*%-5.7d*35*%-0.0d*36*%-2.2d*37*%-7.7d*38*%+7.5d*38*%+7.5d*39*%+5.7d*40*%07.5d*41*%05.7d*42*%-+ 5d*43*%-+ #0d*44*%-+ #05.7d";
+    int a = s21_sprintf(str1, format89, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45);
+    int b = sprintf(str2, format89, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45);
+    ck_assert_str_eq(str1, str2);
+    ck_assert_int_eq(a, b);
+    printf("Test263 --------------\n");
+    printf("%s\n", str1);
+    printf("%s\n", str2);
+    free(str1);
+    free(str2);
+}
+END_TEST
+
 Suite* make_suite(void)
 {
     Suite *s = suite_create("Sprintf tests");
@@ -4632,6 +4740,12 @@ Suite* make_suite(void)
     tcase_add_test(tc_core, test_256);
     tcase_add_test(tc_core, test_257);
     tcase_add_test(tc_core, test_258);
+    tcase_add_test(tc_core, test_259);
+    tcase_add_test(tc_core, test_260);
+    tcase_add_test(tc_core, test_261);
+    tcase_add_test(tc_core, test_262);
+    tcase_add_test(tc_core, test_263);
+    tcase_add_test(tc_core, test_264);
 
     suite_add_tcase(s, tc_core);
     return s;

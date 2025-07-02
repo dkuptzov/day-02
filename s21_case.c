@@ -22,6 +22,8 @@ void case_c(char **str, param *param) {
 void case_u(char **str, param *param) {
     printf("param->width1: %d\n", param->width);
     char *str_du = NULL;
+    int dont_print = 0;
+    printf("STR0: %s\n", *str);
     if (param->length == 'l' && param->va_int == LLONG_MIN) {
         (*str)[param->count++] = '-';
         const char str_llmin[] = "9223372036854775808";
@@ -42,6 +44,7 @@ void case_u(char **str, param *param) {
     printf("param->width2: %d * %d\n", param->width, param->accuracy);
     s21_width_accuracy(strlen, param);
     printf("param->width3: %d * %d * %lld\n", param->width, param->accuracy, param->va_int);
+    //printf("STR00: %s\n", *str);
     if ((param->width < strlen && param->accuracy < 0 && param->va_int < 0 && param->type == 'd') || (param->flag_minus == 1 && param->va_int < 0 && param->type == 'd')) {
         if (param->va_int != LLONG_MIN) (*str)[param->count++] = '-';
         param->width--;
@@ -49,14 +52,28 @@ void case_u(char **str, param *param) {
     }
     else if (param->va_int < 0 && param->type == 'd') param->width--;
     if (param->flag_minus == 1) {
+        dont_print = 1;
         if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) {
             (*str)[param->count++] = '+';
             param->flag_plus = 0;
         }
+        for (int i = 0; i < param->accuracy; i++)
+            (*str)[param->count++] = '0';
+        param->accuracy = 0;
         for (int j = 0; str_du[j] != '\0'; j++) (*str)[param->count++] = str_du[j];
-        s21_alignment(&str, param);
+        for (int i = 0; i < param->width; i++)
+            (*str)[param->count++] = ' ';
     }
-    //else if (param->flag_zero == 1) {
+    else if (param->width > 0 && param->accuracy > 0) {
+        dont_print = 1;
+        if (param->flag_plus == 1) param->width--;
+        for (int i = 0; i < param->width; i++)
+            (*str)[param->count++] = ' ';
+        if (param->flag_plus == 1) (*str)[param->count++] = '+';
+        for (int i = 0; i < param->accuracy; i++)
+            (*str)[param->count++] = '0';
+        for (int j = 0; str_du[j] != '\0'; j++) (*str)[param->count++] = str_du[j];
+    }
     else if (param->flag_zero == 1 || (param->accuracy > 0 && param->width <= 0)) {
         if (param->va_int < 0) (*str)[param->count++] = '-';
         else if (param->flag_plus == 1 && param->type != 'u' && param->va_int > 0) {
@@ -92,8 +109,8 @@ void case_u(char **str, param *param) {
         //str_du = s21_atoi_new(param);
     //}
     printf("STR!!!: %s \n", *str);
-    if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) (*str)[param->count++] = '+';
-    if ((param->flag_minus == 0) && !(param->flag_dot == 1 && param->accuracy == 0 && param->va_int == 0))
+    if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0 && dont_print == 0) (*str)[param->count++] = '+';
+    if ((param->flag_minus == 0) && !(param->flag_dot == 1 && param->accuracy == 0 && param->va_int == 0) && dont_print == 0)
         //for (int j = (param->va_int < 0 && (param->flag_zero == 1 || param->accuracy > 0)) ? 1 : 0; str_du[j] != '\0'; j++)
         //    (*str)[param->count++] = str_du[j];
         for (int j = 0; str_du[j] != '\0'; j++)
@@ -704,9 +721,33 @@ void case_p(char **str, char *str_d, param *param) {
         hex_addr_2[count++] = ')';
     }
     hex_addr_2[count] = '\0';
-    param->width = (param->width > s21_strlen(hex_addr_2)) ? param->width - s21_strlen(hex_addr_2) : -1;
-    if (param->width > 0) s21_alignment(&str, param);
-    for (int i = 0; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
+    int strlen = s21_strlen(hex_addr_2);
+    s21_width_accuracy(strlen, param);
+    if (param->flag_plus == 1 || param->flag_space == 1) param->width--;
+    if (param->flag_zero == 1 && param->flag_dot == 0) {
+        if (param->flag_plus == 1) (*str)[param->count++] = '+';
+        else if (param->flag_space == 1) (*str)[param->count++] = ' ';
+        for (int i = 0; i < 2; i++) (*str)[param->count++] = hex_addr_2[i];
+        if (param->width > 0 &&  param->flag_minus == 0) s21_alignment(&str, param);
+        for (int i = 2; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
+        if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
+    }
+    else if (param->flag_dot == 1) {
+        printf("width: %d\n", param->width);
+        if (param->flag_plus == 1 && param->width <= 0) (*str)[param->count++] = '+';
+        else if (param->flag_space == 1) (*str)[param->count++] = ' ';
+        if (param->width > 0 &&  param->flag_minus == 0) s21_alignment(&str, param);
+        if (param->flag_plus == 1 && param->width > 0) (*str)[param->count++] = '+';
+        for (int i = 0; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
+        if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
+    }
+    else {
+        if (param->width > 0 &&  param->flag_minus == 0) s21_alignment(&str, param);
+        if (param->flag_plus == 1) (*str)[param->count++] = '+';
+        else if (param->flag_space == 1) (*str)[param->count++] = ' ';
+        for (int i = 0; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
+        if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
+    }
     free(hex_addr);
     free(hex_addr_2);
 }
