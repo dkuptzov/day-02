@@ -25,7 +25,7 @@ void case_u(char **str, param *param) {
     int dont_print = 0;
     printf("STR0: %s\n", *str);
     if (param->length == 'l' && param->va_int == LLONG_MIN) {
-        (*str)[param->count++] = '-';
+        //(*str)[param->count++] = '-';
         const char str_llmin[] = "9223372036854775808";
         str_du = calloc(20, sizeof(char));
         for (int i = 0; i < 19; i++) str_du[i] = str_llmin[i];
@@ -40,23 +40,34 @@ void case_u(char **str, param *param) {
         param->width = (param->width > 0) ? param->width - 1: param->width;
     }
     else if (param->flag_plus == 1 && param->va_int >= 0 && (param->flag_minus == 1 || param->flag_space == 1 || param->flag_zero == 1)) param->width = (param->width > 0) ? param->width - 1: param->width;    
-    if (param->flag_hash == 1 && param->flag_space == 0) param->width += 2;
-    printf("param->width2: %d * %d\n", param->width, param->accuracy);
-    s21_width_accuracy(strlen, param);
-    printf("param->width3: %d * %d * %lld\n", param->width, param->accuracy, param->va_int);
-    //printf("STR00: %s\n", *str);
-    if ((param->width < strlen && param->accuracy < 0 && param->va_int < 0 && param->type == 'd') || (param->flag_minus == 1 && param->va_int < 0 && param->type == 'd')) {
-        if (param->va_int != LLONG_MIN) (*str)[param->count++] = '-';
+    if (param->flag_hash == 1 && param->flag_space == 0 && param->va_int != 0) param->width += 2;
+    if ((param->width < strlen && param->accuracy <= 0 && param->va_int < 0 && param->type == 'd') || (param->flag_minus == 1 && param->va_int < 0 && param->type == 'd')) {
+        //if (param->va_int != LLONG_MIN) (*str)[param->count++] = '-';
         param->width--;
         param->flag_zero = 0;
     }
-    else if (param->va_int < 0 && param->type == 'd') param->width--;
-    if (param->flag_minus == 1) {
+    printf("param->width2: %d * %d\n", param->width, param->accuracy);
+    s21_width_accuracy(strlen, param);
+    printf("param->width3: %d * %d * %d\n", param->width, param->accuracy, strlen);
+    printf("STR!!!4: %s \n", *str);
+    //printf("STR00: %s\n", *str);
+    //if ((param->width < strlen && param->accuracy <= 0 && param->va_int < 0 && param->type == 'd') || (param->flag_minus == 1 && param->va_int < 0 && param->type == 'd')) {
+    //    if (param->va_int != LLONG_MIN) (*str)[param->count++] = '-';
+    //    param->width--;
+    //    param->flag_zero = 0;
+    //}
+    //else if (param->va_int < 0 && param->type == 'd') param->width--;
+    printf("param->width4: %d * %d * %d\n", param->width, param->accuracy, strlen);
+    if (param->va_int == 0 && param->width <= 0 && param->accuracy <= 0) {
+        if (param->flag_plus == 1 && param->type != 'u') (*str)[param->count++] = '+';
+    }
+    else if (param->flag_minus == 1) {
         dont_print = 1;
         if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0) {
             (*str)[param->count++] = '+';
             param->flag_plus = 0;
         }
+        if (param->va_int < 0) (*str)[param->count++] = '-';
         for (int i = 0; i < param->accuracy; i++)
             (*str)[param->count++] = '0';
         param->accuracy = 0;
@@ -66,10 +77,11 @@ void case_u(char **str, param *param) {
     }
     else if (param->width > 0 && param->accuracy > 0) {
         dont_print = 1;
-        if (param->flag_plus == 1) param->width--;
+        if (param->flag_plus == 1 && param->va_int >= 0) param->width--;
         for (int i = 0; i < param->width; i++)
             (*str)[param->count++] = ' ';
-        if (param->flag_plus == 1) (*str)[param->count++] = '+';
+        if (param->flag_plus == 1 && param->va_int >= 0) (*str)[param->count++] = '+';
+        else if (param->va_int < 0) (*str)[param->count++] = '-';
         for (int i = 0; i < param->accuracy; i++)
             (*str)[param->count++] = '0';
         for (int j = 0; str_du[j] != '\0'; j++) (*str)[param->count++] = str_du[j];
@@ -89,7 +101,8 @@ void case_u(char **str, param *param) {
             (*str)[param->count++] = '+';
             param->flag_plus = 0;
         }
-    }/*
+    }
+    /*
     else if (param->accuracy > 0) {
         if (param->va_int < 0) (*str)[param->count++] = '-';
         else if (param->flag_plus == 1 && param->va_int >= 0) {
@@ -100,9 +113,12 @@ void case_u(char **str, param *param) {
     }*/
     else if (param->length == 'h') {
         while (param->va_int >= 65536) param->va_int -= 65536;
+        if (param->va_int < 0) (*str)[param->count++] = '-';
         //param->va_int = s21_to_binary(param);
         str_du = s21_atoi_new(param);
     }
+    else if (param->width <= 0 && param->accuracy <= 0 && param->va_int < 0 && param->type != 'u') (*str)[param->count++] = '-';
+    //else if (param->va_int < 0 && param->flag_dot == 1) (*str)[param->count++] = '-';
     //else if (param->length == 'l' && param->va_int != LLONG_MIN) {
         //while ((unsigned long long)param->va_int > 18446744073709551615UL) param->va_int -= 18446744073709551614UL;
         //param->va_int = s21_to_binary(param);
@@ -110,11 +126,13 @@ void case_u(char **str, param *param) {
     //}
     printf("STR!!!: %s \n", *str);
     if (param->type != 'u' && param->flag_plus == 1 && param->va_int > 0 && dont_print == 0) (*str)[param->count++] = '+';
-    if ((param->flag_minus == 0) && !(param->flag_dot == 1 && param->accuracy == 0 && param->va_int == 0) && dont_print == 0)
+    if ((param->flag_minus == 0) && !(param->flag_dot == 1 && param->accuracy == 0 && param->va_int == 0) && dont_print == 0) {
         //for (int j = (param->va_int < 0 && (param->flag_zero == 1 || param->accuracy > 0)) ? 1 : 0; str_du[j] != '\0'; j++)
         //    (*str)[param->count++] = str_du[j];
-        for (int j = 0; str_du[j] != '\0'; j++)
+        for (int j = 0; str_du[j] != '\0'; j++) {
             (*str)[param->count++] = str_du[j];
+        }
+    }
     printf("STR!!!: %s \n", *str);
     free(str_du);
 }
@@ -760,31 +778,32 @@ void s21_width_accuracy(int strlen, param *param) {
         if (param->width == strlen && param->accuracy == strlen) {
             param->width = 0;
             param->accuracy = 0;
-            if (param->va_int < 0) param->accuracy++;
+            //if (param->va_int < 0) param->accuracy++;
         }
         else if (param->width > param->accuracy && param->accuracy > strlen) {
             param->width -= param->accuracy;
             param->accuracy -= strlen;
-            if (param->va_int < 0) {
+            if (param->va_int < 0 && param->flag_minus == 0) {
                 param->width--;
-                param->accuracy++;
+                //param->accuracy++;
             }
         }
         else if (param->width >= param->accuracy && param->width >= strlen) {
             if (param->width > param->accuracy) {
                 param->width -= strlen;
                 param->accuracy = 0;
+                if (param->va_int < 0  && param->flag_minus == 0 && param->type != 'x' && param->type != 'X') param->width--;
             }
             else if (param->width == param->accuracy) {
                 param->accuracy -= strlen;
                 param->width = 0;
+                //if (param->va_int < 0 && param->type != 'x' && param->type != 'X') param->accuracy--;
             }
             //if (param->accuracy <= strlen) param->accuracy = 1;
             //param->accuracy = 0;
         }
         else if (param->accuracy >= param->width && param->accuracy >= strlen) {
             param->accuracy -= strlen;
-            if (param->va_int < 0) param->accuracy++;
             param->width = 0;
         }
         else if (param->accuracy < strlen && param->width < strlen) {
@@ -794,10 +813,12 @@ void s21_width_accuracy(int strlen, param *param) {
     }
     else if (param->width > 0) {
         if ((param->flag_hash == 1) && param->va_int != 0) param->width -= 2;
+        if (param->va_int < 0 && param->flag_minus == 0) param->width--;
         param->width -= strlen;
     }
     else if (param->accuracy > 0) {
         param->accuracy = (param->va_int >= 0) ? param->accuracy - strlen: param->accuracy - strlen + 1;
+        if (param->va_int < 0 && param->flag_minus == 0) param->accuracy--;
     }
     printf("s21_width_accuracy: %d * %d\n", param->width, param->accuracy);
 }
@@ -837,9 +858,8 @@ void s21_width_accuracy_f_0(int strlen, param *param) {
             if (param->accuracy == 0) param->width--;
             else param->width = 0;
         }
-        else if (param->accuracy >= param->width && param->accuracy >= strlen) {
+        else if (param->accuracy >= param->width && param->accuracy >= strlen)
             param->width = 0;
-        }
         else if (param->accuracy < strlen && param->width < strlen) {
             param->width = 0;
         }

@@ -97,6 +97,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                     break;
                 case 'u':
                     param.va_int = va_arg(args, long long int);
+                    printf("param.va_int: %llu\n", param.va_int);
                     case_u(&str_ready, &param);
                     break;
                 case 'f':
@@ -169,7 +170,7 @@ int s21_strlen(char *str_du) {
 
 //выравнивание строки относительно ширины и точности
 void s21_alignment(char ***str, param *param) {
-    printf("s21_alignment:%d ** %d\n", param->width, param->flag_zero);
+    printf("s21_alignment: %d ** %d\n", param->width, param->accuracy);
     if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
     //if (param->width == -1) param->width = 0;
     //if (param->accuracy == -1) param->accuracy = 0;
@@ -190,7 +191,7 @@ void s21_alignment(char ***str, param *param) {
             if (param->va_f < 0) param->width--;
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
-            if (param->va_int < 0 && param->accuracy == -1 && param->flag_minus == 0) (**str)[param->count++] = '-';
+            if (param->va_int < 0 && param->accuracy <= 0 && param->flag_minus == 0) (**str)[param->count++] = '-';
             else if (param->va_f < 0) (**str)[param->count++] = '-';
         }
         if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
@@ -201,7 +202,7 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
         }
         if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e') {
-            if (param->va_int < 0) param->accuracy--;
+            //if (param->va_int < 0 && param->width <= 0) param->accuracy--;
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
         }
