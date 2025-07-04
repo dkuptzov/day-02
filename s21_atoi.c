@@ -107,7 +107,7 @@ int s21_atoi_int(char *str, char *digit, long double x, param *param) {
     long long int x_first = x;
     long long int z;
     printf("XXX0: %.20Lf\n", x);
-    if (param->accuracy <= 0 && param->length == 'L' && param->flag_dot == 1) x = round(x);
+    if (param->accuracy <= 0 && param->flag_dot == 1) x = round(x);
     if (x > 0) z = (long long int)(x + 0.000001);
     else if (param->accuracy == 0) z = round(x);
     else z = (long long int)(x - 0.000001);

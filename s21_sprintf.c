@@ -8,7 +8,7 @@
 // %[флаги][ширина][.точность][длина]спецификатор
 
 int s21_sprintf(char *str, const char *str_format, ...) {
-    param param = {0, 0, 0, 0, 0, 0, 'x', 'x', 'x', 0, 0.01, 0, 0, 0, 0, 0, 0, 0};
+    param param = {0, 0, 0, 0, 0, -1, 'x', 'x', 'x', 0, 0.01, 0, 0, 0, 0, 0, 0, 0};
     va_list args;
     va_start(args, str_format);
     char *str_d, *str_sing, *str_ready;
@@ -61,6 +61,8 @@ int s21_sprintf(char *str, const char *str_format, ...) {
                 if (next_с == 0) i++;
             }
             //сохраняем спецификатор
+            if ((param.flag_dot == 1 || param.flag_minus) && param.flag_zero == 1) param.flag_zero = 0;
+            if (param.flag_space == 1 && param.flag_plus == 1) param.flag_space = 0;
             param.type = str_format[i];
             /*
             va_list copy_args;
@@ -171,9 +173,7 @@ int s21_strlen(char *str_du) {
 //выравнивание строки относительно ширины и точности
 void s21_alignment(char ***str, param *param) {
     printf("s21_alignment: %d ** %d\n", param->width, param->accuracy);
-    if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
-    //if (param->width == -1) param->width = 0;
-    //if (param->accuracy == -1) param->accuracy = 0;
+    //if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
     if (param->type == 'x' || param->type == 'X') {
         if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
@@ -186,13 +186,13 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
     }
     else if (param->type == 'u' || param->type == 'd' || param->type == 'f' || param->type == 'E' || param->type == 'e') {
-        printf("TUT: %d ** %d\n", param->width, param->accuracy);
+        printf("TUT1: %d ** %d %d\n", param->width, param->accuracy, param->flag_dot);
         if (param->width > 0 && param->flag_zero == 0) {
             if (param->va_f < 0) param->width--;
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
             if (param->va_int < 0 && param->accuracy <= 0 && param->flag_minus == 0) (**str)[param->count++] = '-';
-            else if (param->va_f < 0) (**str)[param->count++] = '-';
+            else if (param->va_f < 0 && param->flag_minus == 0) (**str)[param->count++] = '-';
         }
         if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
         //else if (param->va_f < 0 && param->width >= 0 && (param->type == 'e' || param->type == 'E')) (**str)[param->count++] = '-';
@@ -238,18 +238,15 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
     }
     else {
-        if (param->width > 0 && param->flag_zero == 0)
+        if ((param->width > 0 && param->flag_zero == 0) || param->accuracy > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = '0';
         else if (param->width > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
-        else if (param->width > 0)
-            for (int i = 0; i < param->width - param->accuracy; i++)
-                (**str)[param->count++] = ' ';
-        if (param->accuracy > 0)
-            for (int i = 0; i < param->accuracy; i++)
-                (**str)[param->count++] = '0';
+        //if (param->accuracy > 0)
+        //    for (int i = 0; i < param->accuracy; i++)
+        //        (**str)[param->count++] = '0';
     }
 }
 

@@ -656,10 +656,12 @@ int main() {
     //*25*%2.0d -25
     //*26*%2.1d -26
 
-    char *format89 = "%-+d";
-    a = s21_sprintf(str, format89, 0);
+    char *format89 = "%#0x";
+    //unsigned short us_val = 32767;
+    //unsigned long ul_val = 4294967295UL;
+    a = s21_sprintf(str, format89, 32767);
     printf("STR1_200: %d * %s\n", a, str);
-    a = sprintf(str2, format89, 0);
+    a = sprintf(str2, format89, 32767);
     printf("STR2_200: %d * %s\n", a, str2);
 
     //char *format89 = "%g *** %g *** %g *** %g *** %g";
