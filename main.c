@@ -13,19 +13,20 @@ void clear(char **str, char **str2);
 
 int main() {
     char *str, *str2;
-    str = calloc(1024 + 1, sizeof(char));
-    str2 = calloc(1024 + 1, sizeof(char));
+    str = calloc(10024 + 1, sizeof(char));
+    str2 = calloc(10024 + 1, sizeof(char));
     int a;
 
     //double y = 85.95654;
     //int x = 123456789;
     //char *s = "KARAMBA";
-    char c = 'D';
+    //char c = 'D';
 
-    a = s21_sprintf(str, "NUMBER %c TEST", c);
-    a = sprintf(str2, "NUMBER %c TEST", c);
-    printf("ORG_CCC: %s\n\n", str2);
-    clear(&str, &str2);
+    //a = s21_sprintf(str, "NUMBER %c TESTghghghghghhgh", c);
+    //a = sprintf(str2, "NUMBER %c TESTghghghghghhgh", c);
+    //printf("ORG_CCC: %s\n\n", str);
+    //printf("ORG_CCC: %s\n\n", str2);
+    //clear(&str, &str2);
 /*
     a = s21_sprintf(str, "NUMBER %s TEST", s);
     a = sprintf(str2, "NUMBER %s TEST", s);
@@ -656,23 +657,25 @@ int main() {
     //*25*%2.0d -25
     //*26*%2.1d -26
 
-    char *format89 = "%#0x";
+    //char *format89 = "%%%%-Lf%-Lf%+Lf%+Lf% Lf% Lf%#Lf%#Lf%0Lf%0Lf";
+    //long double k = 333.33213;
+    //long double l = -333.33213;
     //unsigned short us_val = 32767;
     //unsigned long ul_val = 4294967295UL;
-    a = s21_sprintf(str, format89, 32767);
+    a = s21_sprintf(str, "%1000d%1000d", 10, 11);
     printf("STR1_200: %d * %s\n", a, str);
-    a = sprintf(str2, format89, 32767);
-    printf("STR2_200: %d * %s\n", a, str2);
+    //a = sprintf(str2, "%1000d%1000d", 10, 11);
+    //printf("STR2_200: %d * %s\n", a, str2);
 
     //char *format89 = "%g *** %g *** %g *** %g *** %g";
     //a = s21_sprintf(str, format89, 0.0, 123.456, -123456789.456, 0.00004543, -0.00004543);
     //printf("STR1_200: %d * %s\n", a, str);
     //a = sprintf(str2, format89, 0.0, 123.456, -123456789.456, 0.00004543, -0.00004543);
     //printf("STR2_200: %d * %s\n", a, str2);
-    clear(&str, &str2);
-    printf("=================================================================\n");
-    printf("%%c\n");
-    printf("=================================================================\n");
+    //clear(&str, &str2);
+    //printf("=================================================================\n");
+    //printf("%%c\n");
+    //printf("=================================================================\n");
     
     //char *format88 = "%+e";
     //a = s21_sprintf(str, format88, 123.456);
@@ -735,7 +738,7 @@ int main() {
         clear(&str900, &str901);
     }
 */
-    printf("=================================================================\n");
+    //printf("=================================================================\n");
 
 /*
     long long int hex900 = 922337203685477580;
@@ -866,13 +869,15 @@ int main() {
     //a = sprintf(str3, "ERROR %f TEST", y);
     //printf("ERROR_1: %s\n", str3);
 
-    printf("NOT USED: %d\n", a);
+    //printf("NOT USED: %d\n", a);
+    free(str);
+    free(str2);
     return 0;
 }
 
 void clear(char **str, char **str2) {
     free(*str);
     free(*str2);
-    *str = calloc(1024 + 1, sizeof(char));
-    *str2 = calloc(1024 + 1, sizeof(char));
+    *str = calloc(10024 + 1, sizeof(char));
+    *str2 = calloc(10024 + 1, sizeof(char));
 }

@@ -5,20 +5,23 @@
 #include "s21_binary.h"
 #include "s21_sprintf.h"
 
-void case_c(char **str, param *param);
-void case_g(char **str, param *param);
-void case_u(char **str, param *param);
-void case_f(char **str, param *param);
-void case_x_plus(char **str, param *param);
-void case_x_minus(char **str, param *param);
-void case_s(char **str, char *str_d, param *param);
-void case_o_plus(char **str, param *param);
-void case_o_minus(char **str, param *param);
-void case_p(char **str, char *str_d, param *param);
-char x8(char **str);
+void s21_case_c(char **str, param *param);
+void s21_case_g(char **str, param *param);
+int s21_case_g_1(param *param, int less_zero, int x);
+void s21_case_g_2(param *param);
+void s21_case_u(char **str, param *param);
+void s21_case_u_width_acc(char **str, param *param, int len, char c);
+void s21_case_f(char **str, param *param);
+void s21_case_x_plus(char **str, param *param);
+void s21_case_x_minus(char **str, param *param);
+char s21_x_plus_minus_switch(long long int x, const param *param);
+void s21_case_s(char **str, const char *str_d, param *param);
+void s21_case_o_plus(char **str, param *param);
+void s21_case_o_minus(char **str, param *param);
+void s21_case_p(char **str, char *str_d, param *param);
+char s21_x8(char **str);
 void s21_width_accuracy(int strlen, param *param);
 void s21_width_accuracy_f_0(int strlen, param *param);
-
 
 //void param_flag_minus(char ***str, char **str_du, param *param);
 

@@ -5,23 +5,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-long long int s21_to_binary(param *param) {
+long long int s21_to_binary(const param *param) {
     char *binary_str_revers, *binary_str;
     binary_str_revers = calloc(1024 + 1, sizeof(char));
     binary_str = calloc(1024 + 1, sizeof(char));
-    int count = 0, count_revers = 0, do_it = 0, multi = 0, plus = 0;
+    int count = 0, count_revers = 0, multi = 0, plus = 0;
     long long int x = param->va_int, result = 0;
-    if (param->type == 'd' && param->length == 'x') {
-        if (x > INT_MAX || x < INT_MIN) do_it = 1;
-    }
-    else if (param->type == 'u') {
-        if (x > LLONG_MAX || x < LLONG_MIN) do_it = 1;
-    }
-    else if (param->length == 'l') {
-        if (x > LONG_MAX || x < LONG_MIN) do_it = 1;
-    }
-    else if (param->length == 'h')
-        if (x > SHRT_MAX || x < SHRT_MIN) do_it = 1;
+    int do_it = s21_do_it(param);
     if (do_it) {
         while (x > 0) {
             binary_str_revers[count_revers++] = (x % 2 == 0) ? '0' : '1';
@@ -58,7 +48,7 @@ long long int s21_to_binary(param *param) {
     return result;
 }
 
-long long int type(long long int x, param *param) {
+long long int s21_type(long long int x, const param *param) {
     if (param->type == 'd' || param->type == 'o' || param->type == 'u' || param->type == 'x' || param->type == 'X') {
         if (param->length == 'h' && param->type == 'o' && (x > SHRT_MAX || x < SHRT_MIN)) x = s21_to_binary2(x, 14, param);
         else if (param->length == 'h' && (x > SHRT_MAX || x < SHRT_MIN)) x = s21_to_binary2(x, 16, param);
@@ -68,7 +58,7 @@ long long int type(long long int x, param *param) {
     return x;
 }
 
-long long int s21_to_binary2(long long int x, int bit, param *param) {
+long long int s21_to_binary2(long long int x, int bit, const param *param) {
     char *binary_str_revers, *binary_str;
     binary_str_revers = calloc(1024 + 1, sizeof(char));
     binary_str = calloc(1024 + 1, sizeof(char));
@@ -106,4 +96,20 @@ long long int s21_to_binary2(long long int x, int bit, param *param) {
     free(binary_str);
     free(binary_str_revers);
     return result;
+}
+
+int s21_do_it(const param *param) {
+    int do_it = 0;
+    if (param->type == 'd' && param->length == 'x') {
+        if (param->va_int > INT_MAX || param->va_int < INT_MIN) do_it = 1;
+    }
+    else if (param->type == 'u') {
+        if (param->va_int > LLONG_MAX || param->va_int < LLONG_MIN) do_it = 1;
+    }
+    else if (param->length == 'l') {
+        if (param->va_int > LONG_MAX || param->va_int < LONG_MIN) do_it = 1;
+    }
+    else if (param->length == 'h')
+        if (param->va_int > SHRT_MAX || param->va_int < SHRT_MIN) do_it = 1;
+    return do_it;
 }

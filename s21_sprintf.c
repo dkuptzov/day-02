@@ -5,175 +5,93 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-// %[флаги][ширина][.точность][длина]спецификатор
 
 int s21_sprintf(char *str, const char *str_format, ...) {
-    param param = {0, 0, 0, 0, 0, -1, 'x', 'x', 'x', 0, 0.01, 0, 0, 0, 0, 0, 0, 0};
+    param param = {0, 0, 0, 0, 0, -1, 'x', 'x', 'x', 0, 0.01, 0, 0, 0, 0, 0, 0, 1024};
     va_list args;
     va_start(args, str_format);
-    char *str_d, *str_sing, *str_ready;
-    str_sing = calloc(10024 + 1, sizeof(char));
-    str_ready = calloc(10024 + 1, sizeof(char));
+    char *str_sing, *str_ready;
+    str_sing = calloc(16 + 1, sizeof(char));
+    str_ready = calloc(param.str_size + 1, sizeof(char));
+    if (str_sing == s21_NULL || str_ready == s21_NULL) param.error = 1;
     for (int i = 0; str_format[i] != '\0' && param.error == 0; i++) {
         if (str_format[i] == '%') {
             s21_update_param(&param);
             i++;
-            while (str_format[i] == '-' || str_format[i] == '+' || str_format[i] == '0' || 
-                str_format[i] == ' ' || str_format[i] == '.' || str_format[i] == '#' ||
-                str_format[i] == '*' || (str_format[i] >= '0' && str_format[i] <= '9') ||
-                str_format[i] == 'h' || str_format[i] == 'l'|| str_format[i] == 'L') {
-                int next_с = 0;
-                if (str_format[i] == '+') param.flag_plus = 1;
-                else if (str_format[i] == ' ') param.flag_space = 1;
-                else if (str_format[i] == '-') param.flag_minus = 1;
-                else if (str_format[i] == '#') param.flag_hash = 1;
-                else if (str_format[i] == '.') param.flag_dot = 1;
-                else if (str_format[i] == '0' && str_format[i - 1] != '.') param.flag_zero = 1;
+            while (s21_str_format(str_format[i])) {
+                int next_c = 0, is_number = 0;
+                if (s21_str_format_is(str_format[i], &param)) next_c = 0;
                 else if (str_format[i] == '*' && param.flag_dot == 1) param.accuracy = va_arg(args, int);
                 else if (str_format[i] == '*') param.width = va_arg(args, int);
-                //точность
-                else if (str_format[i] >= '0' && str_format[i] <= '9' && param.flag_dot == 1) {
-                    while (str_format[i] >= '0' && str_format[i] <= '9')
-                        str_sing[param.count_sign++] = str_format[i++];
-                    str_sing[param.count_sign] = '\0';
-                    param.accuracy = s21_str_to_number(str_sing);
-                    next_с = 1;
-                }
-                //ширина
-                else if (str_format[i] >= '0' && str_format[i] <= '9') {
-                    while (str_format[i] >= '0' && str_format[i] <= '9')
-                        str_sing[param.count_sign++] = str_format[i++];
-                    str_sing[param.count_sign] = '\0';
-                    param.width = s21_str_to_number(str_sing);
-                    next_с = 1;
-                }
-                //длина
+                else if (str_format[i] >= '0' && str_format[i] <= '9') is_number = 1;
                 else if (str_format[i] == 'h' || str_format[i] == 'l'|| str_format[i] == 'L')
                     param.length = str_format[i];
-                //если была запись ширины или точности
-                if (param.count_sign > 0) {
+                while (str_format[i] >= '0' && str_format[i] <= '9' && is_number == 1)
+                    str_sing[param.count_sign++] = str_format[i++];
+                if (is_number == 1) {
+                    str_sing[param.count_sign] = '\0';
+                    if (param.flag_dot == 1) param.accuracy = s21_str_to_number(str_sing);
+                    else param.width = s21_str_to_number(str_sing);
+                    next_c = 1;
                     free(str_sing);
-                    str_sing = calloc(1024 + 1, sizeof(char));
+                    str_sing = calloc(16 + 1, sizeof(char));
+                    if (str_sing == s21_NULL) param.error = 1;
                     param.count_sign = 0;
                 }
-                //если была запись ширины или точности, то там уже был сдвиг, 
-                //иначе переходим на следующий символ
-                if (next_с == 0) i++;
+                if (next_c == 0) i++;
             }
-            //сохраняем спецификатор
             if ((param.flag_dot == 1 || param.flag_minus) && param.flag_zero == 1) param.flag_zero = 0;
             if (param.flag_space == 1 && param.flag_plus == 1) param.flag_space = 0;
             param.type = str_format[i];
-            /*
             va_list copy_args;
             va_copy(copy_args, args);
             s21_switch(str_format[i], str_ready, copy_args, &param);
             va_end(copy_args);
-            va_arg(args, int);
-            */
-            switch (str_format[i]) {
-                case '%':
-                    str_ready[param.count++] = '%';
-                    break;
-                case 'c':
-                    param.c = va_arg(args, int);
-                    case_c(&str_ready, &param);
-                    break;
-                case 'd':
-                    param.va_int = type(va_arg(args, long long int), &param);
-                    if (param.va_int == LLONG_MIN) printf("param.va_int0: %lld\n", param.va_int);
-                    printf("param.va_int1: %lld\n", param.va_int);
-                    case_u(&str_ready, &param);
-                    break;
-                case 'e':
-                case 'E':
-                case 'g':
-                case 'G':
-                    if (param.length == 'L') param.va_f = va_arg(args, long double);
-                    else {
-                        long double temp = va_arg(args, double);
-                        param.va_f = (long double)temp;
-                    }
-                    printf("param.va_f: %.17Lf\n", param.va_f);
-                    case_g(&str_ready, &param);
-                    break;
-                case 'u':
-                    param.va_int = va_arg(args, long long int);
-                    printf("param.va_int: %llu\n", param.va_int);
-                    case_u(&str_ready, &param);
-                    break;
-                case 'f':
-                    if (param.length == 'L')
-                        param.va_f = va_arg(args, long double);
-                    else {
-                        double temp = va_arg(args, double);
-                        param.va_f = (long double)temp;
-                    }
-                    //printf("long double: %Lf\n", param.va_f);
-                    case_f(&str_ready, &param);
-                    break;
-                case 's':
-                    str_d = va_arg(args, char*);
-                    case_s(&str_ready, str_d, &param);
-                    break;
-                case 'x':
-                case 'X':
-                    if (param.length == 'l') param.va_int = va_arg(args, long int);
-                    else { 
-                        int temp_x = va_arg(args, int);
-                        param.va_int = (long long int)temp_x;
-                    }
-                    if (param.va_int == -2147483648) param.va_int *= -1;
-                    if (param.va_int >= 0) case_x_plus(&str_ready, &param);
-                    else case_x_minus(&str_ready, &param);
-                    break;
-                case 'o': //работает только с int
-                    if (param.length == 'l') param.va_int = va_arg(args, long int);
-                    else if (param.length == 'h'){ 
-                        long long int temp_o = va_arg(args, long long int);
-                        param.va_int = (long long int)temp_o;
-                        param.va_int = type(param.va_int, &param);
-                    }
-                    else {
-                        int temp_o = va_arg(args, int);
-                        param.va_int = (long long int)temp_o;
-                    }
-                    //printf("param.va_int: %lld\n", param.va_int);
-                    if (param.flag_hash == 1) str_ready[param.count++] = '0';
-                    if (param.va_int >= 0) case_o_plus(&str_ready, &param);
-                    else case_o_minus(&str_ready, &param);
-                    break;
-                case 'p':
-                    case_p(&str_ready, va_arg(args, char*), &param);
-                    break;
-                default:
-                    param.error = 1;
-                    break;
-            }
+            if (str_format[i] == 'c' || str_format[i] == 'd' || str_format[i] == 'u' || str_format[i] == 'x' || str_format[i] == 'X' || str_format[i] == 'o') va_arg(args, int);
+            else if (param.length == 'L') va_arg(args, long double);
+            else if (str_format[i] == 'e' || str_format[i] == 'E' || str_format[i] == 'g' || str_format[i] == 'G' || str_format[i] == 'f') va_arg(args, double);
+            else if (str_format[i] == 's' || str_format[i] == 'p') va_arg(args, char*);
         }
-        else {
-            str_ready[param.count++] = str_format[i];
-        }
+        else str_ready[param.count++] = str_format[i];
+        s21_malloc_update_main_str(&str_ready, &param);
     }
     va_end(args);
     str_ready[param.count] = '\0';
     if (param.error == 0)
         for (int i = 0; str_ready[i] != '\0'; i++)
             str[i] = str_ready[i];
+    free(str_ready);
+    free(str_sing);
     return param.count;
 }
 
 //функция подсчета длины строки
-int s21_strlen(char *str_du) {
+int s21_strlen(const char *str_du) {
     int i = 0;
     for (; str_du[i] != '\0'; i++);
     return i;
 }
 
+int s21_str_format(char c) {
+    int ret = 0;
+    if (c == '-' || c == '+' || c == '0' || c == ' ' || c == '.' || c == '#' || c == '*' || (c >= '0' && c <= '9') || c == 'h' || c == 'l'|| c == 'L') ret = 1;
+    return ret;
+}
+
+int s21_str_format_is(char c, param *param) {
+    int ret = 1;
+    if (c == '+') param->flag_plus = 1;
+    else if (c == ' ') param->flag_space = 1;
+    else if (c == '-') param->flag_minus = 1;
+    else if (c == '#') param->flag_hash = 1;
+    else if (c == '.') param->flag_dot = 1;
+    else if (c == '0' && param->flag_dot == 0) param->flag_zero = 1;
+    else ret = 0;
+    return ret;
+}
+
 //выравнивание строки относительно ширины и точности
 void s21_alignment(char ***str, param *param) {
-    printf("s21_alignment: %d ** %d\n", param->width, param->accuracy);
-    //if (param->flag_minus == 1 && param->flag_zero == 1) param->flag_zero = 0;
     if (param->type == 'x' || param->type == 'X') {
         if (param->width > 0 && param->flag_zero == 0)
             for (int i = 0; i < param->width; i++)
@@ -186,7 +104,6 @@ void s21_alignment(char ***str, param *param) {
                 (**str)[param->count++] = '0';
     }
     else if (param->type == 'u' || param->type == 'd' || param->type == 'f' || param->type == 'E' || param->type == 'e') {
-        printf("TUT1: %d ** %d %d\n", param->width, param->accuracy, param->flag_dot);
         if (param->width > 0 && param->flag_zero == 0) {
             if (param->va_f < 0) param->width--;
             for (int i = 0; i < param->width; i++)
@@ -195,14 +112,12 @@ void s21_alignment(char ***str, param *param) {
             else if (param->va_f < 0 && param->flag_minus == 0) (**str)[param->count++] = '-';
         }
         if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
-        //else if (param->va_f < 0 && param->width >= 0 && (param->type == 'e' || param->type == 'E')) (**str)[param->count++] = '-';
         if (param->width > 0 && param->flag_zero == 1) {
             if (param->accuracy < 0) param->accuracy = 0;
             for (int i = 0; i < param->width - param->accuracy; i++)
                 (**str)[param->count++] = '0';
         }
         if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e') {
-            //if (param->va_int < 0 && param->width <= 0) param->accuracy--;
             for (int i = 0; i < param->accuracy; i++)
                 (**str)[param->count++] = '0';
         }
@@ -222,12 +137,6 @@ void s21_alignment(char ***str, param *param) {
         if (param->width > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
-        //else if (param->width > 0 && param->flag_zero == 1)
-        //    for (int i = 0; i < param->width; i++)
-        //        (**str)[param->count++] = '0';
-        //else if (param->accuracy > 0)
-        //    for (int i = 0; i < param->accuracy; i++)
-        //        (**str)[param->count++] = '0';
     }
     else if (param->type == 'o') {
         if (param->width > 0)
@@ -244,13 +153,10 @@ void s21_alignment(char ***str, param *param) {
         else if (param->width > 0)
             for (int i = 0; i < param->width; i++)
                 (**str)[param->count++] = ' ';
-        //if (param->accuracy > 0)
-        //    for (int i = 0; i < param->accuracy; i++)
-        //        (**str)[param->count++] = '0';
     }
 }
 
-int s21_str_to_number(char *str_sing) {
+int s21_str_to_number(const char *str_sing) {
     int number = 0, multiplier = 1;
     for (int i = 0; str_sing[i] != '\0'; i++) {
         number *= multiplier;
@@ -309,40 +215,37 @@ void s21_update_param(param *param) {
 
 void s21_switch(char c, char *str_ready, va_list args, param *param) {
     switch (c) {
+        case '%':
+            str_ready[param->count++] = '%';
+            break;
         case 'c':
             param->c = va_arg(args, int);
-            case_c(&str_ready, param);
+            s21_case_c(&str_ready, param);
             break;
         case 'd':
-            param->va_int = type(va_arg(args, long long int), param);
-            case_u(&str_ready, param);
+            param->va_int = s21_type(va_arg(args, long long int), param);
+            s21_case_u(&str_ready, param);
             break;
         case 'e':
         case 'E':
         case 'g':
         case 'G':
+        case 'f':
             if (param->length == 'L') param->va_f = va_arg(args, long double);
             else {
                 long double temp = va_arg(args, double);
                 param->va_f = (long double)temp;
             }
-            case_g(&str_ready, param);
+            if (param->type == 'f') s21_case_f(&str_ready, param);
+            else s21_case_g(&str_ready, param);
             break;
         case 'u':
             param->va_int = va_arg(args, long long int);
-            case_u(&str_ready, param);
-            break;
-        case 'f':
-            if (param->length == 'L') param->va_f = va_arg(args, long double);
-            else {
-                double temp = va_arg(args, double);
-                param->va_f = (long double)temp;
-            }
-            case_f(&str_ready, param);
+            s21_case_u(&str_ready, param);
             break;
         case 's':
             char *str_d = va_arg(args, char*);
-            case_s(&str_ready, str_d, param);
+            s21_case_s(&str_ready, str_d, param);
             break;
         case 'x':
         case 'X':
@@ -352,29 +255,103 @@ void s21_switch(char c, char *str_ready, va_list args, param *param) {
                 param->va_int = (long long int)temp_x;
             }
             if (param->va_int == -2147483648) param->va_int *= -1;
-            if (param->va_int >= 0) case_x_plus(&str_ready, param);
-            else case_x_minus(&str_ready, param);
+            if (param->va_int >= 0) s21_case_x_plus(&str_ready, param);
+            else s21_case_x_minus(&str_ready, param);
             break;
-        case 'o':
+        case 'o': //работает только с int
             if (param->length == 'l') param->va_int = va_arg(args, long int);
             else if (param->length == 'h'){ 
                 long long int temp_o = va_arg(args, long long int);
                 param->va_int = (long long int)temp_o;
-                param->va_int = type(param->va_int, param);
+                param->va_int = s21_type(param->va_int, param);
             }
             else {
-                long long int temp_o = va_arg(args, long long int);
+                int temp_o = va_arg(args, int);
                 param->va_int = (long long int)temp_o;
             }
             if (param->flag_hash == 1) str_ready[param->count++] = '0';
-            if (param->va_int >= 0) case_o_plus(&str_ready, param);
-            else case_o_minus(&str_ready, param);
+            if (param->va_int >= 0) s21_case_o_plus(&str_ready, param);
+            else s21_case_o_minus(&str_ready, param);
             break;
         case 'p':
-            case_p(&str_ready, va_arg(args, char*), param);
+            s21_case_p(&str_ready, va_arg(args, char*), param);
             break;
         default:
             param->error = 1;
             break;
-        }
+    }
 }
+
+void s21_switch_if(char c, char *str_ready, va_list args, param *param) {
+    if (c == '%') str_ready[param->count++] = '%';
+    else if (c == 'c') {
+        param->c = va_arg(args, int);
+        s21_case_c(&str_ready, param);
+    }
+    else if (c == 'd') {
+        param->va_int = s21_type(va_arg(args, long long int), param);
+        s21_case_u(&str_ready, param);
+    }
+    else if (c == 'e' || c == 'E' || c == 'g' || c == 'G' || c == 'f') {
+        if (param->length == 'L') param->va_f = va_arg(args, long double);
+        else {
+            long double temp = va_arg(args, double);
+            param->va_f = (long double)temp;
+        }
+        if (c == 'f') s21_case_f(&str_ready, param);
+        else s21_case_g(&str_ready, param);
+    }
+    else if (c == 'u') {
+        param->va_int = va_arg(args, long long int);
+        s21_case_u(&str_ready, param);
+    }
+    else if (c == 's') {
+        char *str_d = va_arg(args, char*);
+        s21_case_s(&str_ready, str_d, param);
+    }
+    else if (c == 'x' || c == 'X') {
+        if (param->length == 'l') param->va_int = va_arg(args, long int);
+        else { 
+            int temp_x = va_arg(args, int);
+            param->va_int = (long long int)temp_x;
+        }
+        if (param->va_int == -2147483648) param->va_int *= -1;
+        if (param->va_int >= 0) s21_case_x_plus(&str_ready, param);
+        else s21_case_x_minus(&str_ready, param);
+    }
+    else if (c == 'o') {
+        if (param->length == 'l') param->va_int = va_arg(args, long int);
+        else if (param->length == 'h'){ 
+            long long int temp_o = va_arg(args, long long int);
+            param->va_int = (long long int)temp_o;
+            param->va_int = s21_type(param->va_int, param);
+        }
+        else {
+            int temp_o = va_arg(args, int);
+            param->va_int = (long long int)temp_o;
+        }
+        if (param->flag_hash == 1) str_ready[param->count++] = '0';
+        if (param->va_int >= 0) s21_case_o_plus(&str_ready, param);
+        else s21_case_o_minus(&str_ready, param);
+    }
+    else if (c == 'p') s21_case_p(&str_ready, va_arg(args, char*), param);
+}
+
+void s21_malloc_update_main_str(char **str, param *param) {
+  if (param->count > param->str_size / 2) {
+    param->str_size *= 2;
+    char *temp = realloc(*str, param->str_size + 1);
+    if (temp == NULL) param->error = 2;
+    else *str = temp;
+  }
+}
+/*
+int s21_malloc_update(char **str, int size, param *param) {
+  if (param->count > param->str_size / 2) {
+    param->str_size *= 2;
+    char *temp = realloc(*str, param->str_size + 1);
+    if (temp == NULL) param->error = 2;
+    else *str = temp;
+  }
+}
+*/
