@@ -20,10 +20,10 @@ void s21_case_c(char **str, param *param) {
 }
 
 void s21_case_u(char **str, param *param) {
-    char *str_du = NULL;
+    char *str_du = s21_NULL;
     int dont_print = 0, zero_3 = 0, acc = param->accuracy;
     if (param->length == 'l' && param->va_int == LLONG_MIN) {
-        const char str_llmin[] = "9223372036854775808";
+        const char str_llmin[23] = "9223372036854775808";
         str_du = calloc(20, sizeof(char));
         for (int i = 0; i < 19; i++) str_du[i] = str_llmin[i];
     }
@@ -145,7 +145,7 @@ void s21_case_f(char **str, param *param) {
 
 void s21_case_g(char **str, param *param) {
     char *str_int;
-    int count = 0, less_zero = 0;
+    int less_zero = 0;
     long double param_va_f = param->va_f;
     if (param->flag_plus == 1 && param->va_f >= 0) (*str)[param->count++] = '+';
     else if (param->flag_space == 1 && param->va_f >= 0) (*str)[param->count++] = ' ';
@@ -155,7 +155,7 @@ void s21_case_g(char **str, param *param) {
     }
     if (param->va_f == 0.0 && (param->type == 'g' || param->type == 'G')) (*str)[param->count++] = '0';
     else if ((param->va_f >= pow(10, 6) || param_va_f >= pow(10, 6)) || ((param->type == 'e' || param->type == 'E') && (param->va_f >= 1 || param_va_f >= 1))) {
-        count = s21_case_g_1(param, less_zero, 1);
+        int count = s21_case_g_1(param, less_zero, 1);
         str_int = s21_atoi_new(param);
         param->width = (param->width > s21_strlen(str_int)) ? param->width - s21_strlen(str_int) - 4 : -1;
         if (param->flag_zero == 1 || param->width >= 0) s21_alignment(&str, param);
@@ -168,7 +168,7 @@ void s21_case_g(char **str, param *param) {
         (*str)[param->count++] = '0' + (count % 10);
     }
     else if ((param->va_f < pow(10, -4) || param_va_f < pow(10, -4)) || ((param->type == 'e' || param->type == 'E') && (param->va_f < 1 || param_va_f < 1))) {
-        count = s21_case_g_1(param, less_zero, 2);
+        int count = s21_case_g_1(param, less_zero, 2);
         if (param->accuracy == 0) param->va_f = round(param->va_f);
         str_int = s21_atoi_new(param);
         param->width = (param->width > s21_strlen(str_int)) ? param->width - s21_strlen(str_int) - 4 : -1;
@@ -196,7 +196,6 @@ void s21_case_g(char **str, param *param) {
             if ((*str)[param->count] == '.') (*str)[param->count] = '\0';
             param->count++;
         }
-        (*str)[param->count] = '\0';
     }
 }
 
@@ -328,6 +327,7 @@ void s21_case_x_plus(char **str, param *param) {
         (*str)[param->count++] = str_x[i];
     if (param->flag_minus == 1)
         s21_alignment(&str, param);
+    free(str_x);
 }
 
 char s21_x_plus_minus_switch(long long int x, const param *param) {
@@ -361,9 +361,7 @@ void s21_case_x_minus(char **str, param *param) {
     int count = 0, count_revers = 0, plus = 0;
     long long int result;
     char *binary_str_revers, *binary_str, *str_x;
-    str_x = calloc(64 + 1, sizeof(char));
-    binary_str_revers = calloc(64 + 1, sizeof(char));
-    binary_str = calloc(64 + 1, sizeof(char));
+    s21_make_str_case_x(&str_x, &binary_str_revers, &binary_str, 64, param);
     long long int x_va_int = param->va_int * -1;
     while (x_va_int > 0) {
         binary_str_revers[count_revers++] = (x_va_int % 2 == 0) ? '0' : '1';
@@ -419,9 +417,7 @@ void s21_case_x_minus(char **str, param *param) {
         if (param->length != 'h' || i > count_revers - 5) 
             (*str)[param->count++] = str_x[i];
     }
-    free(str_x);
-    free(binary_str_revers);
-    free(binary_str);
+    s21_free_str_case_x(&str_x, &binary_str_revers, &binary_str);
 }
 
 void s21_case_o_plus(char **str, param *param) {
@@ -448,6 +444,7 @@ void s21_case_o_plus(char **str, param *param) {
         for (int i = count - 1; i >= 0; i--) (*str)[param->count++] = str_o[i];
     }
     else for (int i = count - 1; i >= 0; i--) (*str)[param->count++] = str_o[i];
+    free(str_o);
 }
 
 void s21_case_o_minus(char **str, param *param) {
@@ -465,10 +462,8 @@ void s21_case_o_minus(char **str, param *param) {
     binary_str[count++] = '1';
     for (int i = 0; i < 32 - count_revers; i++) binary_str[count++] = '0';
     for (int i = count_revers - 1; i >= 0; i--) binary_str[count++] = binary_str_revers[i];
-    for (int i = 0; binary_str[i] != '\0'; i++) {
-        if (binary_str[i] == '0') binary_str[i] = '1';
-        else binary_str[i] = '0';
-    }
+    for (int i = 0; binary_str[i] != '\0'; i++)
+        binary_str[i] = (binary_str[i] == '0') ? '1' : '0';
     for (int i = count - 1; i >= 0; i--) {
         if (binary_str[i] == '1' && plus == 1) binary_str[i] = '0';
         else if (binary_str[i] == '0' && plus == 1) {
@@ -497,14 +492,11 @@ void s21_case_o_minus(char **str, param *param) {
         for (int i = 0; str_x8[i] != '\0'; i++) (*str)[param->count++] = str_x8[i];
     }
     else for (int i = 0; str_x8[i] != '\0'; i++) (*str)[param->count++] = str_x8[i];
-    free(binary_str_revers);
-    free(binary_str);
-    free(str_x8);
-    free(str3);
+    s21_free_str_case_o(&binary_str_revers, &binary_str, &str_x8, &str3);
 }
 
 char s21_x8(char **str) {
-    char x8;
+    char x8 = '0';
     if ((*str)[0] == '0' && (*str)[1] == '0' && (*str)[2] == '0') x8 = '0';
     else if ((*str)[0] == '0' && (*str)[1] == '0' && (*str)[2] == '1') x8 = '1';
     else if ((*str)[0] == '0' && (*str)[1] == '1' && (*str)[2] == '0') x8 = '2';
@@ -522,8 +514,8 @@ void s21_case_p(char **str, char *str_d, param *param) {
     hex_addr = calloc(32 + 1, sizeof(char));
     hex_addr_2 = calloc(32 + 1, sizeof(char));
     uintptr_t address = (uintptr_t) str_d;
-    int first = 1, count = 2;
-    if (str_d != NULL) {
+    int count = 2;
+    if (str_d != s21_NULL) {
         for(int i = sizeof(void*) * 2 - 1; i >= 0; --i) 
             hex_addr[i] = "0123456789abcdef"[((address >> (i * 4)) & 0xf)];
         hex_addr[sizeof(void *) * 2 + 1] = '\0';
@@ -533,6 +525,7 @@ void s21_case_p(char **str, char *str_d, param *param) {
             hex_addr_2[count++] = '0';
             param->accuracy--;
         }
+        int first = 1;
         for (int i = sizeof(void*) * 2 - 1; i >= 0; --i) {
             if (first == 0) hex_addr_2[count++] = hex_addr[i];
             else if (hex_addr[i] != 'x' && hex_addr[i] != '0') {
@@ -559,7 +552,6 @@ void s21_case_p(char **str, char *str_d, param *param) {
         for (int i = 0; i < 2; i++) (*str)[param->count++] = hex_addr_2[i];
         if (param->width > 0 &&  param->flag_minus == 0) s21_alignment(&str, param);
         for (int i = 2; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
-        if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
     }
     else if (param->flag_dot == 1) {
         if (param->flag_plus == 1 && param->width <= 0) (*str)[param->count++] = '+';
@@ -567,15 +559,14 @@ void s21_case_p(char **str, char *str_d, param *param) {
         if (param->width > 0 &&  param->flag_minus == 0) s21_alignment(&str, param);
         if (param->flag_plus == 1 && param->width > 0) (*str)[param->count++] = '+';
         for (int i = 0; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
-        if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
     }
     else {
         if (param->width > 0 &&  param->flag_minus == 0) s21_alignment(&str, param);
         if (param->flag_plus == 1) (*str)[param->count++] = '+';
         else if (param->flag_space == 1) (*str)[param->count++] = ' ';
         for (int i = 0; i < count; i++) (*str)[param->count++] = hex_addr_2[i];
-        if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
     }
+    if (param->width > 0 &&  param->flag_minus == 1) s21_alignment(&str, param);
     free(hex_addr);
     free(hex_addr_2);
 }
@@ -649,4 +640,25 @@ void s21_width_accuracy_f_0(int strlen, param *param) {
     else if (param->width > 0) {
         param->width -= strlen;
     }
+}
+
+void s21_make_str_case_x(char **str1, char **str2, char **str3, int max_count, param *param) {
+    *str1 = calloc(max_count + 1, sizeof(char));
+    *str2 = calloc(max_count + 1, sizeof(char));
+    *str3 = calloc(max_count + 1, sizeof(char));
+    if (*str1 == s21_NULL || *str2 == s21_NULL || *str3 == s21_NULL)
+        param->error = 1;
+}
+
+void s21_free_str_case_x(char **str1, char **str2, char **str3) {
+    free(*str1);
+    free(*str2);
+    free(*str3);
+}
+
+void s21_free_str_case_o(char **str1, char **str2, char **str3, char **str4) {
+    free(*str1);
+    free(*str2);
+    free(*str3);
+    free(*str4);
 }

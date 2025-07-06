@@ -5,11 +5,11 @@
 #include <stdlib.h>
 
 char *s21_atoi_new(param *param) {
-    int max = 6, max2 = 20, count = 0;
+    int max = 6, max2, count = 0;
     char *digit, *str;
     digit = calloc(64 + 1, sizeof(char));
     str = calloc(64 + 1, sizeof(char));
-    int x = 0;
+    int x;
     if (param->length == 'h' || param->type == 'd' || param->type == 'u') {
         if (param->type == 'u') x = s21_atoi_int_u(str, digit, (unsigned long long)param->va_int, param);
         else x = s21_atoi_int(str, digit, param->va_int, param);
@@ -19,7 +19,6 @@ char *s21_atoi_new(param *param) {
         if (param->flag_dot == 1) {
             if (param->accuracy <= 0 && param->width <= 0 && (param->type == 'g' || param->type == 'G')) max = 1;
             else if (param->type == 'f' && param->va_f == 0.0 && param->flag_space == 0 && param->length == 'x') max = 1;
-            else if (param->accuracy >= 0 && param->va_f < 0) max = param->accuracy;
             else if (param->accuracy >= 0) max = param->accuracy;
             else max = param->width;
         }
@@ -40,10 +39,21 @@ char *s21_atoi_new(param *param) {
             max--;
             max2--;
         }
+        int z1 = 0, z2 = 0, z3 = 0;
         while (count < max) {
             int test = 0;
             y -= (long long int)y;
-            while (test++ < max2 - count) y *= 10;
+            while (test++ < max2 - count) {
+                long long int last_y = (long long int)y % 10;
+                if (z2 != 0 && z2 == test && param->type != 'f') y = round(y);
+                y *= 10;
+                if ((long long int)y % 10 == 9 && last_y == 0) z1 = test;
+                if ((long long int)y % 10 != 9 ) z1 = 0;
+                if (test == max2 - count - 1 && z3 == 0) {
+                    z2 = z1;
+                    z3 = 1;
+                }
+            }
             if ((param->type == 'e' || param->type == 'E') && (param->flag_dot != 1 || count == max - 1))
                 y = round(y);
             else if (param->type == 'f' || param->type == 'g' || param->type == 'G') y = round(y);

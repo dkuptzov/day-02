@@ -45,7 +45,7 @@ int s21_sprintf(char *str, const char *str_format, ...) {
             param.type = str_format[i];
             va_list copy_args;
             va_copy(copy_args, args);
-            s21_switch(str_format[i], str_ready, copy_args, &param);
+            s21_switch_if(str_format[i], str_ready, copy_args, &param);
             va_end(copy_args);
             if (str_format[i] == 'c' || str_format[i] == 'd' || str_format[i] == 'u' || str_format[i] == 'x' || str_format[i] == 'X' || str_format[i] == 'o') va_arg(args, int);
             else if (param.length == 'L') va_arg(args, long double);
@@ -65,7 +65,6 @@ int s21_sprintf(char *str, const char *str_format, ...) {
     return param.count;
 }
 
-//функция подсчета длины строки
 int s21_strlen(const char *str_du) {
     int i = 0;
     for (; str_du[i] != '\0'; i++);
@@ -90,70 +89,55 @@ int s21_str_format_is(char c, param *param) {
     return ret;
 }
 
-//выравнивание строки относительно ширины и точности
 void s21_alignment(char ***str, param *param) {
     if (param->type == 'x' || param->type == 'X') {
         if (param->width > 0 && param->flag_zero == 0)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = ' ';
+            s21_for_aligment(str, param, param->width, ' ');
         else if (param->width > 0 && param->flag_zero == 1)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = '0';
+            s21_for_aligment(str, param, param->width, '0');
         else if (param->accuracy > 0)
-            for (int i = 0; i < param->accuracy; i++)
-                (**str)[param->count++] = '0';
+            s21_for_aligment(str, param, param->accuracy, '0');
     }
     else if (param->type == 'u' || param->type == 'd' || param->type == 'f' || param->type == 'E' || param->type == 'e') {
         if (param->width > 0 && param->flag_zero == 0) {
             if (param->va_f < 0) param->width--;
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = ' ';
+            s21_for_aligment(str, param, param->width, ' ');
             if (param->va_int < 0 && param->accuracy <= 0 && param->flag_minus == 0) (**str)[param->count++] = '-';
             else if (param->va_f < 0 && param->flag_minus == 0) (**str)[param->count++] = '-';
         }
         if (param->va_int < 0 && param->width > 0 && param->accuracy > 0) (**str)[param->count++] = '-';
         if (param->width > 0 && param->flag_zero == 1) {
             if (param->accuracy < 0) param->accuracy = 0;
-            for (int i = 0; i < param->width - param->accuracy; i++)
-                (**str)[param->count++] = '0';
+            s21_for_aligment(str, param, param->width - param->accuracy, '0');
         }
-        if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e') {
-            for (int i = 0; i < param->accuracy; i++)
-                (**str)[param->count++] = '0';
-        }
+        if (param->accuracy > 0 && param->va_f != 0.0 && param->type != 'E' && param->type != 'e')
+            s21_for_aligment(str, param, param->accuracy, '0');
     }
     else if (param->type == 's' || param->type == 'p') {
         if (param->width > 0 && (param->flag_zero == 0 || param->flag_dot == 1))
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = ' ';
+            s21_for_aligment(str, param, param->width, ' ');
         else if (param->width > 0 && param->flag_zero == 1)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = '0';
+            s21_for_aligment(str, param, param->width, '0');
         else if (param->accuracy > 0)
-            for (int i = 0; i < param->accuracy; i++)
-                (**str)[param->count++] = '0';
+            s21_for_aligment(str, param, param->accuracy, '0');
     }
     else if (param->type == 'c') {
-        if (param->width > 0)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = ' ';
+        if (param->width > 0) s21_for_aligment(str, param, param->width, ' ');
     }
     else if (param->type == 'o') {
-        if (param->width > 0)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = ' ';
-        if (param->accuracy > 0)
-            for (int i = 0; i < param->accuracy; i++)
-                (**str)[param->count++] = '0';
+        if (param->width > 0) s21_for_aligment(str, param, param->width, ' ');
+        if (param->accuracy > 0) s21_for_aligment(str, param, param->accuracy, '0');
     }
     else {
         if ((param->width > 0 && param->flag_zero == 0) || param->accuracy > 0)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = '0';
-        else if (param->width > 0)
-            for (int i = 0; i < param->width; i++)
-                (**str)[param->count++] = ' ';
+            s21_for_aligment(str, param, param->width, '0');
+        else if (param->width > 0) s21_for_aligment(str, param, param->width, ' ');
     }
+}
+
+void s21_for_aligment(char ***str, param *param, int len, char c) {
+    for (int i = 0; i < len; i++)
+        (**str)[param->count++] = c;
 }
 
 int s21_str_to_number(const char *str_sing) {
@@ -258,7 +242,7 @@ void s21_switch(char c, char *str_ready, va_list args, param *param) {
             if (param->va_int >= 0) s21_case_x_plus(&str_ready, param);
             else s21_case_x_minus(&str_ready, param);
             break;
-        case 'o': //работает только с int
+        case 'o':
             if (param->length == 'l') param->va_int = va_arg(args, long int);
             else if (param->length == 'h'){ 
                 long long int temp_o = va_arg(args, long long int);
@@ -306,7 +290,7 @@ void s21_switch_if(char c, char *str_ready, va_list args, param *param) {
         s21_case_u(&str_ready, param);
     }
     else if (c == 's') {
-        char *str_d = va_arg(args, char*);
+        const char *str_d = va_arg(args, char*);
         s21_case_s(&str_ready, str_d, param);
     }
     else if (c == 'x' || c == 'X') {
@@ -345,13 +329,3 @@ void s21_malloc_update_main_str(char **str, param *param) {
     else *str = temp;
   }
 }
-/*
-int s21_malloc_update(char **str, int size, param *param) {
-  if (param->count > param->str_size / 2) {
-    param->str_size *= 2;
-    char *temp = realloc(*str, param->str_size + 1);
-    if (temp == NULL) param->error = 2;
-    else *str = temp;
-  }
-}
-*/

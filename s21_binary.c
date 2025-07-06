@@ -9,10 +9,11 @@ long long int s21_to_binary(const param *param) {
     char *binary_str_revers, *binary_str;
     binary_str_revers = calloc(1024 + 1, sizeof(char));
     binary_str = calloc(1024 + 1, sizeof(char));
-    int count = 0, count_revers = 0, multi = 0, plus = 0;
+    int count = 0, multi = 0;
     long long int x = param->va_int, result = 0;
     int do_it = s21_do_it(param);
     if (do_it) {
+        int count_revers = 0;
         while (x > 0) {
             binary_str_revers[count_revers++] = (x % 2 == 0) ? '0' : '1';
             x /= 2;
@@ -21,6 +22,7 @@ long long int s21_to_binary(const param *param) {
             binary_str[count++] = binary_str_revers[i];
     }
     if (do_it && binary_str[count - 16] == '1') {
+        int plus = 0;
         for (int i = count - 1; i >= count - 16; i--) {
             if (binary_str[i] == '1' && i == count - 1)
                 result += (pow(2, multi));
@@ -62,7 +64,7 @@ long long int s21_to_binary2(long long int x, int bit, const param *param) {
     char *binary_str_revers, *binary_str;
     binary_str_revers = calloc(1024 + 1, sizeof(char));
     binary_str = calloc(1024 + 1, sizeof(char));
-    int count = 0, count_revers = 0, multi = 0, plus = 0;
+    int count = 0, count_revers = 0, multi = 0;
     long long int result = 0;
     while (x > 0) {
         binary_str_revers[count_revers++] = (x % 2 == 0) ? '0' : '1';
@@ -72,6 +74,7 @@ long long int s21_to_binary2(long long int x, int bit, const param *param) {
         binary_str[count++] = binary_str_revers[i];
     while (binary_str[count - bit] == '1' && param->type == 'o') bit++;
     if (binary_str[count - bit] == '1') {
+        int plus = 0;
         for (int i = count - 1; i >= count - bit; i--) {
             if (binary_str[i] == '1' && i == count - 1)
                 result += (pow(2, multi));
